@@ -11,7 +11,7 @@ public class AgentPlayer extends Player {
 	    super();
 	    
 	    this.name = name;
-	    this.human = true;
+	    this.human = false;
 	}
 
 	@Override
