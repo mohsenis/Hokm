@@ -7,16 +7,16 @@ public class State {
 	private List<Card> inHand;
 	private List<Card> played;
 	
-	private int team1Score;
-	private int team2Score;
+	private int teamScore;
+	private int opponentScore;
 	
 	public State(List<Card> onTable, List<Card> inHand, List<Card> played,
 			int team1Score, int team2Score){
 		this.onTable = onTable;
 		this.inHand = inHand;
 		this.played = played;
-		this.team1Score = team1Score;
-		this.team2Score = team2Score;
+		this.teamScore = team1Score;
+		this.opponentScore = team2Score;
 	}
 	
 	public List<Card> getOnTable(){
@@ -32,10 +32,10 @@ public class State {
 	}
 	
 	public int getTeam1Score(){
-		return this.team1Score;
+		return this.teamScore;
 	}
 	
 	public int getTeam2Score(){
-		return this.team2Score;
+		return this.opponentScore;
 	}
 }

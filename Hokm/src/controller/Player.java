@@ -9,19 +9,27 @@ import java.util.List;
 
 public abstract class Player {
 	protected String name;
-	private Player teammate;
 	protected boolean human;
+	private Team team;
+	protected int index;
 	
 	private List<Card> inHand;
 	private List<State> stateSequence;
 	private List<Card> actions;
+	private List<Boolean> rewards;
 	
 	public Player(){
 		this.name = "";
+		this.index = 0;
 		
 		this.inHand = new ArrayList<Card>();
 		this.stateSequence = new ArrayList<State>();
 		this.actions = new ArrayList<Card>();
+		this.rewards = new ArrayList<Boolean>();
+	}
+	
+	public int getIndex(){
+		return this.index;
 	}
 	
 	public boolean isHuman(){
@@ -36,12 +44,12 @@ public abstract class Player {
 		this.name = name;
 	}
 	
-	public Player getTeammate(){
-		return this.teammate;
+	public Team getTeam(){
+		return this.team;
 	}
 	
-	public void setTeammate(Player teammate){
-		this.teammate = teammate;
+	public void setTeam(Player teammate){
+		this.team = new Team(teammate);
 	}
 	
 	public List<Card> getInHand(){
@@ -54,6 +62,10 @@ public abstract class Player {
 	
 	public List<Card> getActions(){
 		return this.actions;
+	}
+	
+	public List<Boolean> getRewards(){
+		return this.rewards;
 	}
 	
 	public abstract Card action(List<Card> legalActions);

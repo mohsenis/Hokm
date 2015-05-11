@@ -7,9 +7,10 @@ import java.util.List;
 
 public class HumanPlayer extends Player {
 
-	public HumanPlayer(String name) {
+	public HumanPlayer(String name,int i) {
 	    super();
 	    
+	    this.index=i;
 	    this.name = name;
 	    this.human = true;
 	}

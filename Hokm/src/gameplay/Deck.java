@@ -17,4 +17,8 @@ public class Deck {
 			}
 		}
 	}
+	
+	public List<Card> getDeck(){
+		return this.deck;
+	}
 }
