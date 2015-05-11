@@ -48,8 +48,8 @@ public abstract class Player {
 		return this.team;
 	}
 	
-	public void setTeam(Player teammate){
-		this.team = new Team(teammate);
+	public void setTeam(Team team){
+		this.team = team;
 	}
 	
 	public List<Card> getInHand(){
@@ -70,6 +70,6 @@ public abstract class Player {
 	
 	public abstract Card action(List<Card> legalActions);
 	
-	public abstract SuitName hokmDet(List<Card> firsFive);
+	public abstract SuitName hokmDet(List<Card> firstFive);
 	
 }

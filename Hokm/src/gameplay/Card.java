@@ -4,8 +4,9 @@ public class Card {
 	final private int suit;
 	final private int value;
 	private SuitName suitName;
+	private ValueName valueName;
 	
-	public Card(int suit, int value){
+	/*public Card(int suit, int value){
 		this.suit = suit;
 		this.value = value;
 		switch (suit){
@@ -22,12 +23,13 @@ public class Card {
 			suitName = SuitName.Dimond;
 			break;
 		}
-	}
+	}*/
 	
-	public Card(SuitName suitName, int value){
+	public Card(SuitName suitName, ValueName valueName){
 		this.suit = suitName.getSuit();
-		this.value = value;
+		this.value = valueName.getValue();
 		this.suitName = suitName;
+		this.valueName = valueName;
 	}
 	
 	public int getSuit(){
@@ -42,6 +44,8 @@ public class Card {
 		return this.value;
 	} 
 	
-	
+	public ValueName getValueName(){
+		return this.valueName;
+	} 
 	
 }

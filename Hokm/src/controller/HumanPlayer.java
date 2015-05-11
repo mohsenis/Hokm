@@ -22,7 +22,7 @@ public class HumanPlayer extends Player {
 	}
 
 	@Override
-	public SuitName hokmDet(List<Card> firsFive) {
+	public SuitName hokmDet(List<Card> firstFive) {
 		// To be implemented.
 		return null;
 	}

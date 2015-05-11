@@ -9,14 +9,16 @@ public class State {
 	
 	private int teamScore;
 	private int opponentScore;
+	private SuitName hokm;
 	
 	public State(List<Card> onTable, List<Card> inHand, List<Card> played,
-			int team1Score, int team2Score){
+			int teamScore, int opponentScore, SuitName hokm){
 		this.onTable = onTable;
 		this.inHand = inHand;
 		this.played = played;
-		this.teamScore = team1Score;
-		this.opponentScore = team2Score;
+		this.teamScore = teamScore;
+		this.opponentScore = opponentScore;
+		this.hokm = hokm;
 	}
 	
 	public List<Card> getOnTable(){
@@ -37,5 +39,9 @@ public class State {
 	
 	public int getTeam2Score(){
 		return this.opponentScore;
+	}
+	
+	public SuitName getHokm(){
+		return this.hokm;
 	}
 }

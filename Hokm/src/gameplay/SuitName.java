@@ -2,8 +2,8 @@ package gameplay;
 
 public enum SuitName {
 	Dimond  (4),
-	Club  (3),
-    Heart (2),
+	Club    (3),
+    Heart   (2),
     Spade   (1),
     ;
 

@@ -11,8 +11,8 @@ public class Deck {
 		Card card;
 		
 		for (SuitName suitName : SuitName.values()) {
-			for(int i=2;i<=14;i++){
-				card = new Card(suitName, i);
+			for(ValueName valueName : ValueName.values()){
+				card = new Card(suitName, valueName);
 				deck.add(card);
 			}
 		}

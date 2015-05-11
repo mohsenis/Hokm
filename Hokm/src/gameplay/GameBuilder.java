@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import controller.Player;
+import controller.Team;
 
 public class GameBuilder {
 	private List<Player> players;
@@ -29,15 +30,18 @@ public class GameBuilder {
 	}
 	
 	public void teamBuilder(List<Player> players){
+		Team team;
 		long seed = System.nanoTime();
 		Collections.shuffle(players, new Random(seed));
 		
 		setHakem(players.get(0));
 		
-		players.get(0).setTeam(players.get(2));
-		players.get(1).setTeam(players.get(3));
-		players.get(2).setTeam(players.get(0));
-		players.get(3).setTeam(players.get(1));
+		team = new Team(players.get(0), players.get(2));
+		players.get(0).setTeam(team);
+		players.get(2).setTeam(team);
+		team = new Team(players.get(1), players.get(3));
+		players.get(1).setTeam(team);
+		players.get(3).setTeam(team);
 	}
 	
 	public List<Player> reorder(List<Player> players, int hakem){
@@ -61,6 +65,8 @@ public class GameBuilder {
 			//check which team won last game and change players order if necessary
 			game = new Game(players);
 			
+			
+			players = game.play();
 		}
 		
 		return "Finish";
