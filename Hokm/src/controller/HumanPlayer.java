@@ -4,6 +4,7 @@ import gameplay.Card;
 import gameplay.SuitName;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class HumanPlayer extends Player {
 
@@ -17,14 +18,18 @@ public class HumanPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions) {
-		// To be implemented.
-		return null;
+		Scanner sc = new Scanner(System.in);
+		Card card=legalActions.get(sc.nextInt());
+		sc.close();
+		return card;
 	}
 
 	@Override
 	public SuitName hokmDet(List<Card> firstFive) {
-		// To be implemented.
-		return null;
+		Scanner sc=new Scanner(System.in);
+		SuitName suitName=firstFive.get(sc.nextInt()).getSuitName();
+		sc.close();
+		return suitName;
 	}
 
 }
