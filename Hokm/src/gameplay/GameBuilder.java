@@ -62,9 +62,7 @@ public class GameBuilder {
 		
 		while(players.get(0).getTeam().getTotalScore()<7 && 
 				players.get(1).getTeam().getTotalScore()<7 && !game.getTerminate()){
-			//check which team won last game and change players order if necessary
 			game = new Game(players);
-			
 			
 			players = game.play();
 			players.get(0).getTeam().updateTotalScore();

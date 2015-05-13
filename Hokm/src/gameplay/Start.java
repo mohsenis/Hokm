@@ -12,7 +12,7 @@ public class Start {
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Enter number of human player(s): ");  
 		int nHuman=sc.nextInt(); 
-		sc.close();
+		
 		//Check for number of player no greater than 4
 		
 		for(int i=0;i<nHuman;i++){
@@ -25,7 +25,7 @@ public class Start {
 		
 		String result = gb.startGame(gb.getPlayers());
 		System.out.println(result);
-		
+		sc.close();
 		/*for(Player player:gb.getPlayers()){
 			System.out.println(player.getName());
 		}*/
