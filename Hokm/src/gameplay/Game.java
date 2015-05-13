@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import controller.Player;
+import controller.Team;
 
 public class Game {
 	private List<Player> players;
@@ -100,15 +101,17 @@ public class Game {
 	public int detWinner(List<Card> table, SuitName hokm) {
 		int winner = 0;
 		for (int i=1;i<GameBuilder.N_PLAYERS;i++){
+			int value = table.get(i).getValue();
+			SuitName suit = table.get(i).getSuitName();
 			if (table.get(winner).getSuitName()==hokm){
-				if (table.get(i).getSuitName()==hokm && table.get(i).getValue()>table.get(winner).getValue()){
+				if (suit==hokm && value>table.get(winner).getValue()){
 					winner=i;
 				}
 			}else{
-				if (table.get(i).getValue()>table.get(winner).getValue()){
-						winner=i;
-				}else {
-					if (table.get(i).getSuitName()==hokm){
+				if (suit==hokm){
+					winner=i;
+				}else if(suit==table.get(winner).getSuitName()){
+					if (value>table.get(winner).getValue()){
 						winner=i;
 					}
 				}
@@ -145,20 +148,21 @@ public class Game {
 				action = player.action(legalActions(this.state));
 				player.getStateSequence().add(state);
 				player.getActions().add(action);
-				// update player.inHand, this.table, and this.played
+				this.table.add(action);
 				player.getInHand().remove(action); // update player's cards in
 													// hand
-				this.played.add(action); // adding card on the table to played-list ???
+				this.played.add(action); // adding card on the table to played-list 
 			}
 
 			this.winner = detWinner(this.table, this.hokm);
 			players.get(winner).getTeam().updateTrickScore();// update trick-scores
-			players.get((winner+2)%4).getTeam().updateTrickScore(); //update trick score of the teammate
-			this.table.removeAll(table); // removing all cards from the table
-
-			for (int i = 0; i < GameBuilder.N_PLAYERS; i++) {
-				// update player.reward and player.trickScore				
-			}
+			this.table.clear(); // removing all cards from the table
+			
+			players = GameBuilder.reorder(players, winner);
+			players.get(0).getRewards().add(true);
+			players.get(2).getRewards().add(true);
+			players.get(1).getRewards().add(false);
+			players.get(3).getRewards().add(false);
 		}
 
 		return this.players;

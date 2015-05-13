@@ -23,7 +23,8 @@ public class Start {
 			gb.getPlayers().add(new AgentPlayer("agent"+i,i));
 		}
 		
-		gb.startGame(gb.getPlayers());
+		String result = gb.startGame(gb.getPlayers());
+		System.out.println(result);
 		
 		/*for(Player player:gb.getPlayers()){
 			System.out.println(player.getName());

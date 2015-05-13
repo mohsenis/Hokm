@@ -44,7 +44,7 @@ public class GameBuilder {
 		players.get(3).setTeam(team);
 	}
 	
-	public List<Player> reorder(List<Player> players, int hakem){
+	public static List<Player> reorder(List<Player> players, int hakem){
 		List<Player> playersNew=new ArrayList<Player>(4);
 		for (int i=0; i<players.size();i++){
 			int j=i+hakem;
@@ -67,8 +67,10 @@ public class GameBuilder {
 			
 			
 			players = game.play();
+			players.get(0).getTeam().updateTotalScore();
+			System.out.println("score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
 		}
 		
-		return "Finish";
+		return "Winner is "+players.get(0).getName()+" and "+players.get(2).getName();
 	}
 }
