@@ -11,7 +11,7 @@ import controller.Team;
 public class GameBuilder {
 	private List<Player> players;
 	final static int N_PLAYERS = 4;
-	private int hakem;
+	//private int hakem;
 	
 	public GameBuilder(){
 		players = new ArrayList<Player>(N_PLAYERS);
@@ -21,20 +21,20 @@ public class GameBuilder {
 		return this.players;
 	}
 	
-	public void setHakem(Player player){
+	/*public void setHakem(Player player){
 		this.hakem=player.getIndex();
 	}
 	
 	public int getHakem(){
 		return this.hakem;
-	}
+	}*/
 	
 	public void teamBuilder(List<Player> players){
 		Team team;
 		long seed = System.nanoTime();
 		Collections.shuffle(players, new Random(seed));
 		
-		setHakem(players.get(0));
+		//setHakem(players.get(0));
 		
 		team = new Team(players.get(0), players.get(2));
 		players.get(0).setTeam(team);
@@ -44,7 +44,8 @@ public class GameBuilder {
 		players.get(3).setTeam(team);
 	}
 	
-	public static List<Player> reorder(List<Player> players, int hakem){
+	public static List<Player> reorder(List<Player> players, Player player){
+		int hakem = players.indexOf(player);
 		List<Player> playersNew=new ArrayList<Player>(4);
 		for (int i=0; i<players.size();i++){
 			int j=i+hakem;
@@ -65,8 +66,17 @@ public class GameBuilder {
 			game = new Game(players);
 			
 			players = game.play();
-			players.get(0).getTeam().updateTotalScore();
-			System.out.println("score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
+			if(players.get(1).getTeam().getTrickScore()==0){
+				if(players.get(0).equals(game.getHakem())){
+					players.get(0).getTeam().updateTotalScore(false);
+				}else{
+					players.get(0).getTeam().updateTotalScore(true);
+				}
+			}else{
+				players.get(0).getTeam().updateTotalScore();
+			}
+			
+			System.out.println("Total score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
 		}
 		
 		return "Winner is "+players.get(0).getName()+" and "+players.get(2).getName();

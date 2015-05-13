@@ -29,12 +29,24 @@ public class Team {
 		this.trickScore ++;
 	}
 	
+	public void resetTrickScore(){
+		this.trickScore=0;
+	}
+	
 	public int getTotalScore(){
 		return this.totalScore;
 	}
 	
 	public void updateTotalScore(){
 		this.totalScore ++;
+	}
+	
+	public void updateTotalScore(boolean hakemKot){
+		if(hakemKot){
+			this.totalScore += 3;
+		}else{
+			this.totalScore += 2;
+		}
 	}
 	
 }

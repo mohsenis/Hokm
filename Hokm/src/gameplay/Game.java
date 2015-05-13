@@ -15,17 +15,29 @@ public class Game {
 	 * private int team1Tricks; private int team2Tricks;
 	 */
 	private State state;
-	private int winner;
+	private Player winner;
 	private boolean terminate;
 	private SuitName hokm;
+	private Player hakem;
 	private List<Card> table;
 	private List<Card> played;
 
 	/* private int hakemInd; */
 
+	public void setHakem(Player player){
+		this.hakem=player;
+	}
+	
+	public Player getHakem(){
+		return this.hakem;
+	}
+	
 	public Game(List<Player> players) {
 		this.players = players;
+		this.players.get(0).getTeam().resetTrickScore();
+		this.players.get(1).getTeam().resetTrickScore();
 		this.deck = new Deck();
+		this.hakem = players.get(0);
 		/*
 		 * team1Tricks = 0; team2Tricks = 0;
 		 */
@@ -89,7 +101,7 @@ public class Game {
 		return actions;
 	}
 
-	public int detWinner(List<Card> table, SuitName hokm) {
+	public Player detWinner(List<Card> table, SuitName hokm) {
 		int winner = 0;
 		for (int i=1;i<GameBuilder.N_PLAYERS;i++){
 			int value = table.get(i).getValue();
@@ -108,7 +120,7 @@ public class Game {
 				}
 			}
 		}
-		return winner;
+		return this.players.get(winner);
 	}
 	
 	public void sortHand(List<Card> hand){
@@ -164,7 +176,7 @@ public class Game {
 			}
 
 			this.winner = detWinner(this.table, this.hokm);
-			players.get(winner).getTeam().updateTrickScore();// update trick-scores
+			winner.getTeam().updateTrickScore();// update trick-scores
 			this.table.clear(); // removing all cards from the table
 			
 			players = GameBuilder.reorder(players, winner);
@@ -178,7 +190,15 @@ public class Game {
 			}
 			
 		}
-
+		
+		Player tmpHakem = hakem;
+		System.out.println(players.indexOf(hakem));
+		System.out.println((players.indexOf(hakem)+1)%4);
+		if(hakem.getTeam().getTrickScore()<7){
+			tmpHakem = players.get((players.indexOf(hakem)+1)%4);
+		}
+		players = GameBuilder.reorder(players, tmpHakem);
+		
 		return this.players;
 	}
 

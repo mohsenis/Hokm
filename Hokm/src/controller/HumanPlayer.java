@@ -20,11 +20,11 @@ public class HumanPlayer extends Player {
 	public Card action(List<Card> legalActions) {
 		System.out.println("available moves are:");
 		for(Card card: legalActions){
-			System.out.println(card.getValueName()+" of "+card.getSuitName());
+			System.out.println((legalActions.indexOf(card)+1)+") "+card.getValueName()+" of "+card.getSuitName());
 		}
 		System.out.print("your move: ");
 		Scanner sc = new Scanner(System.in);
-		int action = sc.nextInt();
+		int action = sc.nextInt()-1;
 		Card card=legalActions.get(action);
 		return card;
 	}
@@ -33,12 +33,13 @@ public class HumanPlayer extends Player {
 	public SuitName hokmDet(List<Card> firstFive) {
 		
 		for(Card card: firstFive){
-			System.out.println(card.getValueName()+" of "+card.getSuitName());
+			System.out.println((firstFive.indexOf(card)+1)+") "+card.getValueName()+" of "+card.getSuitName());
 		}
 		
 		Scanner sc = new Scanner(System.in);
 		System.out.print("Select hokm: ");
-		int hokm = sc.nextInt();
+		System.out.println("1: Spades, 2: Hearts, 3: Clubs, 4: Diamonds");
+		int hokm = sc.nextInt()-1;
 		SuitName suitName=firstFive.get(hokm).getSuitName();
 		return suitName;
 	}
