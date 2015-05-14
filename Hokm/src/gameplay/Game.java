@@ -37,11 +37,9 @@ public class Game {
 		this.players.get(0).getTeam().resetTrickScore();
 		this.players.get(1).getTeam().resetTrickScore();
 		this.deck = new Deck();
+		
 		this.hakem = players.get(0);
-		/*
-		 * team1Tricks = 0; team2Tricks = 0;
-		 */
-		terminate = false;
+		this.terminate = false;
 		this.table = new ArrayList<Card>();
 		this.played = new ArrayList<Card>();
 	}

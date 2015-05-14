@@ -63,8 +63,7 @@ public class GameBuilder {
 		
 		while(players.get(0).getTeam().getTotalScore()<7 && 
 				players.get(1).getTeam().getTotalScore()<7 && !game.getTerminate()){
-			game = new Game(players);
-			
+						
 			players = game.play();
 			if(players.get(1).getTeam().getTrickScore()==0){
 				if(players.get(0).equals(game.getHakem())){
@@ -77,6 +76,7 @@ public class GameBuilder {
 			}
 			
 			System.out.println("Total score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
+			game = new Game(players);
 		}
 		
 		return "Winner is "+players.get(0).getName()+" and "+players.get(2).getName();
