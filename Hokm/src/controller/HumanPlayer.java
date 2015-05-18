@@ -26,6 +26,7 @@ public class HumanPlayer extends Player {
 		Scanner sc = new Scanner(System.in);
 		int action = sc.nextInt()-1;
 		Card card=legalActions.get(action);
+//		sc.close();
 		return card;
 	}
 
@@ -41,6 +42,7 @@ public class HumanPlayer extends Player {
 		System.out.println("1: Spades, 2: Hearts, 3: Clubs, 4: Diamonds");
 		int hokm = sc.nextInt()-1;
 		SuitName suitName=firstFive.get(hokm).getSuitName();
+//		sc.close();
 		return suitName;
 	}
 

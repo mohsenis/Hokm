@@ -18,6 +18,8 @@ public abstract class Player {
 	private List<Card> actions;
 	private List<Boolean> rewards;
 	
+	private List<Boolean> suitStatus;
+	
 	public Player(){
 		this.name = "";
 		this.index = 0;
@@ -26,6 +28,11 @@ public abstract class Player {
 		this.stateSequence = new ArrayList<State>();
 		this.actions = new ArrayList<Card>();
 		this.rewards = new ArrayList<Boolean>();
+		
+		this.suitStatus = new ArrayList<Boolean>();
+		for(@SuppressWarnings("unused") SuitName suit: SuitName.values()){
+			this.suitStatus.add(true);
+		}
 	}
 	
 	public int getIndex(){
@@ -66,6 +73,15 @@ public abstract class Player {
 	
 	public List<Boolean> getRewards(){
 		return this.rewards;
+	}
+	
+	public List<Boolean> getSuitStatus(){
+		return this.suitStatus;
+	}
+	
+	public void updateSuitStatus(SuitName suit){
+		int i = suit.getSuit();
+		this.suitStatus.add(i, false);
 	}
 	
 	public abstract Card action(List<Card> legalActions);

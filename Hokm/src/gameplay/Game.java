@@ -21,27 +21,29 @@ public class Game {
 	private Player hakem;
 	private List<Card> table;
 	private List<Card> played;
+	private List<Player> playedBy;
 
 	/* private int hakemInd; */
 
-	public void setHakem(Player player){
-		this.hakem=player;
+	public void setHakem(Player player) {
+		this.hakem = player;
 	}
-	
-	public Player getHakem(){
+
+	public Player getHakem() {
 		return this.hakem;
 	}
-	
+
 	public Game(List<Player> players) {
 		this.players = players;
 		this.players.get(0).getTeam().resetTrickScore();
 		this.players.get(1).getTeam().resetTrickScore();
 		this.deck = new Deck();
-		
+
 		this.hakem = players.get(0);
 		this.terminate = false;
 		this.table = new ArrayList<Card>();
 		this.played = new ArrayList<Card>();
+		this.playedBy = new ArrayList<Player>();
 	}
 
 	public void setHokm(SuitName suitName) {
@@ -79,57 +81,59 @@ public class Game {
 	public List<Card> legalActions(State state) {
 		List<Card> actions = new ArrayList<Card>();
 		System.out.println("on table: ");
-		for(Card card: state.getOnTable()){
-			System.out.println(card.getValueName() +" of "+card.getSuitName());
+		for (Card card : state.getOnTable()) {
+			System.out.println(card.getValueName() + " of "
+					+ card.getSuitName());
 		}
-		
+
 		if (this.table.isEmpty()) {
 			actions = state.getInHand();
 		} else {
 			for (Card card : state.getInHand()) {
-				if(card.getSuitName()==state.getOnTable().get(0).getSuitName()){
+				if (card.getSuitName() == state.getOnTable().get(0)
+						.getSuitName()) {
 					actions.add(card);
 				}
 			}
-			if(actions.size()==0){
+			if (actions.size() == 0) {
 				actions = state.getInHand();
 			}
 		}
-		
+
 		return actions;
 	}
 
 	public Player detWinner(List<Card> table, SuitName hokm) {
 		int winner = 0;
-		for (int i=1;i<GameBuilder.N_PLAYERS;i++){
+		for (int i = 1; i < GameBuilder.N_PLAYERS; i++) {
 			int value = table.get(i).getValue();
 			SuitName suit = table.get(i).getSuitName();
-			if (table.get(winner).getSuitName()==hokm){
-				if (suit==hokm && value>table.get(winner).getValue()){
-					winner=i;
+			if (table.get(winner).getSuitName() == hokm) {
+				if (suit == hokm && value > table.get(winner).getValue()) {
+					winner = i;
 				}
-			}else{
-				if (suit==hokm){
-					winner=i;
-				}else if(suit==table.get(winner).getSuitName()){
-					if (value>table.get(winner).getValue()){
-						winner=i;
+			} else {
+				if (suit == hokm) {
+					winner = i;
+				} else if (suit == table.get(winner).getSuitName()) {
+					if (value > table.get(winner).getValue()) {
+						winner = i;
 					}
 				}
 			}
 		}
 		return this.players.get(winner);
 	}
-	
-	public void sortHand(List<Card> hand){
-		Collections.sort(hand, new Comparator<Card>(){
-            public int compare(Card c1, Card c2) {
-            	if(c1.getSuit()==c2.getSuit()){
-            		return c1.getValue() - c2.getValue();
-            	}
-                return c1.getSuit()- c2.getSuit();
-            }
-        });
+
+	public void sortHand(List<Card> hand) {
+		Collections.sort(hand, new Comparator<Card>() {
+			public int compare(Card c1, Card c2) {
+				if (c1.getSuit() == c2.getSuit()) {
+					return c1.getValue() - c2.getValue();
+				}
+				return c1.getSuit() - c2.getSuit();
+			}
+		});
 	}
 
 	public List<Player> play() {
@@ -146,57 +150,63 @@ public class Game {
 			firstFive.add(this.players.get(0).getInHand().get(i));
 		}
 		sortHand(firstFive);
-		System.out.println(players.get(0).getName()+", select the Hokm:");
+		System.out.println(players.get(0).getName() + ", select the Hokm:");
 		setHokm(this.players.get(0).hokmDet(firstFive));
-		
+
 		while (players.get(0).getTeam().getTrickScore() < 7
 				&& players.get(1).getTeam().getTrickScore() < 7
 				&& !getTerminate()) {
 
 			for (Player player : players) {
 				sortHand(player.getInHand());
-				System.out.println(player.getName()+" cards:");
-				for(Card card: player.getInHand()){
-					 System.out.println(card.getValueName()+" of "+card.getSuitName()); 
+				System.out.println(player.getName() + " cards:");
+				for (Card card : player.getInHand()) {
+					System.out.println(card.getValueName() + " of "
+							+ card.getSuitName());
 				}
 				this.state = new State(this.table, player.getInHand(),
-						this.played, player.getTeam().getTrickScore(), player
-								.getInHand().size()
-								- player.getTeam().getTrickScore(), this.hokm);
-
+						this.played, this.playedBy, player.getTeam().getTrickScore(), 
+						player.getInHand().size() - player.getTeam().getTrickScore(), this.hokm);
+				
 				action = player.action(legalActions(this.state));
+				if(!this.table.isEmpty() && this.table.get(0).getSuitName()!=action.getSuitName()){
+					player.updateSuitStatus(action.getSuitName());
+				}
+				
 				player.getStateSequence().add(state);
 				player.getActions().add(action);
 				this.table.add(action);
 				player.getInHand().remove(action); // update player's cards in
 													// hand
-				this.played.add(action); // adding card on the table to played-list 
+				this.played.add(action); 
+				this.playedBy.add(player);
 			}
 
 			this.winner = detWinner(this.table, this.hokm);
 			winner.getTeam().updateTrickScore();// update trick-scores
 			this.table.clear(); // removing all cards from the table
-			
+
 			players = GameBuilder.reorder(players, winner);
 			players.get(0).getRewards().add(true);
 			players.get(2).getRewards().add(true);
 			players.get(1).getRewards().add(false);
 			players.get(3).getRewards().add(false);
-			
-			for(Player player: players){
-				System.out.println(player.getName()+": "+player.getTeam().getTrickScore());
+
+			for (Player player : players) {
+				System.out.println(player.getName() + ": "
+						+ player.getTeam().getTrickScore());
 			}
-			
+
 		}
-		
+
 		Player tmpHakem = hakem;
 		System.out.println(players.indexOf(hakem));
-		System.out.println((players.indexOf(hakem)+1)%4);
-		if(hakem.getTeam().getTrickScore()<7){
-			tmpHakem = players.get((players.indexOf(hakem)+1)%4);
+		System.out.println((players.indexOf(hakem) + 1) % 4);
+		if (hakem.getTeam().getTrickScore() < 7) {
+			tmpHakem = players.get((players.indexOf(hakem) + 1) % 4);
 		}
 		players = GameBuilder.reorder(players, tmpHakem);
-		
+
 		return this.players;
 	}
 
