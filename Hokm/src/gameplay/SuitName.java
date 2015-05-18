@@ -1,10 +1,10 @@
 package gameplay;
 
 public enum SuitName {
-	Dimond  (4),
-	Club    (3),
-    Heart   (2),
-    Spade   (1),
+	Dimonds  (4),
+	Clubs    (3),
+    Hearts   (2),
+    Spades   (1),
     ;
 
     private final int suit;
