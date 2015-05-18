@@ -23,7 +23,6 @@ public class AI {
 	public static Card takeAction(List<Card> legalActions, State state,
 			List<Player> players, Player currentPlayer) {
 		// List<Card> possibleActions()
-
 		return null;
 
 	}
