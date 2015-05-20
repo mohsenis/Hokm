@@ -41,11 +41,11 @@ public class State {
 		return this.playedByPlayers;
 	}
 	
-	public int getTeam1Score(){
+	public int getTeamScore(){
 		return this.teamScore;
 	}
 	
-	public int getTeam2Score(){
+	public int getOpponentScore(){
 		return this.opponentScore;
 	}
 	
