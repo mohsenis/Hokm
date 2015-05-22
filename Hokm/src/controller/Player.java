@@ -75,10 +75,11 @@ public abstract class Player {
 		return this.rewards;
 	}
 	
-	public List<Boolean> getSuitStatus(){
-		return this.suitStatus;
+	public Boolean getSuitStatus(SuitName suit){
+		return this.suitStatus.get(suit.getSuit());
 	}
 	
+	/* checks if the player has the suit in hand or not */
 	public void updateSuitStatus(SuitName suit){
 		int i = suit.getSuit();
 		this.suitStatus.add(i, false);

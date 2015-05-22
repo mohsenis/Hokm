@@ -11,6 +11,7 @@ import controller.Player;
 public class Game {
 	private List<Player> players;
 	private Deck deck;
+	private CardValue cardValue;
 	/*
 	 * private int team1Tricks; private int team2Tricks;
 	 */
@@ -22,7 +23,7 @@ public class Game {
 	private List<Card> table;
 	private List<Card> played;
 	private List<Player> playedBy;
-
+	
 	/* private int hakemInd; */
 
 	public void setHakem(Player player) {
@@ -32,7 +33,7 @@ public class Game {
 	public Player getHakem() {
 		return this.hakem;
 	}
-
+		
 	public Game(List<Player> players) {
 		this.players = players;
 		this.players.get(0).getTeam().resetTrickScore();
@@ -103,7 +104,7 @@ public class Game {
 		return actions;
 	}
 
-	public Player detWinner(List<Card> table, SuitName hokm) {
+	public static Player detWinner(List<Player> players, List<Card> table, SuitName hokm) {
 		int winner = 0;
 		for (int i = 1; i < GameBuilder.N_PLAYERS; i++) {
 			int value = table.get(i).getValue();
@@ -122,7 +123,7 @@ public class Game {
 				}
 			}
 		}
-		return this.players.get(winner);
+		return players.get(winner);
 	}
 
 	public void sortHand(List<Card> hand) {
@@ -178,11 +179,12 @@ public class Game {
 				this.table.add(action);
 				player.getInHand().remove(action); // update player's cards in
 													// hand
+				cardValue.updateValue(action); // remove the action card from the carValue list
 				this.played.add(action); 
 				this.playedBy.add(player);
 			}
 
-			this.winner = detWinner(this.table, this.hokm);
+			this.winner = detWinner(this.players, this.table, this.hokm);
 			winner.getTeam().updateTrickScore();// update trick-scores
 			this.table.clear(); // removing all cards from the table
 
