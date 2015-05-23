@@ -14,7 +14,11 @@ import controller.Player;
 
 public class AI {
 
-	public List<Card> possibleActions(State state, Player player) {
+	private AI(){
+		
+	}
+	
+	private List<Card> possibleActions(State state, Player player) {
 		List<Card> remainingCards = new Deck().getDeck();
 		remainingCards.removeAll(state.getPlayed());
 		remainingCards.removeAll(state.getInHand());
@@ -39,6 +43,7 @@ public class AI {
 
 	public static Card takeAction(List<Card> legalActions, State state,
 			List<Player> players, Player currentPlayer) {
+		int need = findNeed(state.getTeamScore(),state.getOpponentScore());
 		// List<Card> possibleActions()
 		return null;
 	}
@@ -47,6 +52,20 @@ public class AI {
 	private static double cardAbsValue(Card card) {
 		double val = Math.pow(card.getValue() / 14, 2);
 		return val;
+	}
+	
+	private static int findNeed(int trick1, int trick2){
+		int need = 1;
+		if(trick2==6){
+			need=2;
+		}else if(trick2==5 && trick1<5){
+			need=2;
+		}else if(trick2==4 && trick1<3){
+			need=2;
+		}else if(trick2==3 && trick1<1){
+			need=2;
+		}
+		return need;
 	}
 
 	// returns the likelihood of taking the trick with a specific card
