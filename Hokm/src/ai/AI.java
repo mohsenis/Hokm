@@ -187,54 +187,67 @@ public class AI {
 							else if (myCard.getValue()<op1Card.getValue())
 								L=1;
 							else if (myCard.getValue()>op1Card.getValue()
-									&& cardValue.getValue(op1Card)>9)
+									&& cardValue.getValue(op1Card)>9) //double check
 								L=3;
 							else
-								L=2;
+								L=2; //why again?
 						}
 					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {//stop point.
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-
+							L=1;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-
+							L=3;
 						} else {
-
+							L=1;
 						}
 					} else {
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-
+							if (myCard.getValue()>op1Card.getValue())
+								L=4;
+							else if (cardValue.getValue(op1Card)>9)
+								L=2;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-
+							L=4;
 						} else {
-
+							if (myCard.getValue()>op1Card.getValue())
+								L=4;
+							else
+								L=1;
 						}
 					}
-				} else if (myCard.getSuitName() == hokm) {
+				} else if (myCard.getSuitName() == hokm) {//changed
 					if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
-						
-					}
-					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-
-					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-
+						L=4;
+					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(myCard)<9)
+								L=2;
+						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+							L=3;
+						} else {
+							if (cardValue.getValue(myCard)<9)
+								L=2;
+						}
 					} else {
-
+						L=4;
 					}
-				} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+				} else {//why we never checked op1.cardValue==12??
 					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(op1Card)>9)
+								L=2;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus)
+							L=1;
+						else
+							if (cardValue.getValue(op1Card)>9)
+								L=2;
 					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-
+						if (op2.getSuitStatus(hokm) && hokmSuitStatus)
+							L=3;
+						else
+							L=4;
 					} else {
-
-					}
-				} else {
-					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-
-					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-
-					} else {
-
+						L=1;
 					}
 				}
 			}
