@@ -1,7 +1,6 @@
 package gameplay;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class CardValue {
 	ArrayList<Card> spades;
@@ -50,26 +49,28 @@ public class CardValue {
 			}
 			this.diamonds.set(0, card);
 			break;
-		}		
+		}
 	}
 
 	public int getValue(Card card) {
 		int s = card.getSuit();
-		int val=0;
+		int val;
 		switch (s) {
 		case 0:
-			val=this.spades.indexOf(card);
+			val = this.spades.indexOf(card);
 			break;
 		case 1:
-			val=this.hearts.indexOf(card);
+			val = this.hearts.indexOf(card);
 			break;
 		case 2:
-			val=this.clubs.indexOf(card);
+			val = this.clubs.indexOf(card);
 			break;
 		case 3:
-			val=this.diamonds.indexOf(card);
+			val = this.diamonds.indexOf(card);
 			break;
+		default:
+			val = 0;
 		}
-		return val;				
+		return val;
 	}
 }
