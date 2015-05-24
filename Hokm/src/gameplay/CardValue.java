@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CardValue {
-	ArrayList<Card> spades;
-	ArrayList<Card> diamonds;
-	ArrayList<Card> hearts;
-	ArrayList<Card> clubs;
+	private List<Card> spades;
+	private ArrayList<Card> diamonds;
+	private ArrayList<Card> hearts;
+	private ArrayList<Card> clubs;
 
 	public CardValue() {
 		spades = new ArrayList<Card>();
@@ -58,7 +58,7 @@ public class CardValue {
 		}
 	}
 	
-	private int indexOf(List<Card> cardList, Card myCard){
+	/*private int indexOf(List<Card> cardList, Card myCard){
 		int out=-1;
 		
 		for (int i=0;i<13;i++){
@@ -66,24 +66,24 @@ public class CardValue {
 				return i;
 		}
 		return out;
-	}
-
+	}*/
+	
 	public int getValue(Card card) {
 		int s = card.getSuit();
 		int val;
 		switch (s) {
 		case 0:
-			val = this.indexOf(spades,card);
+			val = this.spades.indexOf(card);
 			//val = this.spades.indexOf(card);
 			break;
 		case 1:
-			val = this.indexOf(hearts, card);
+			val = this.hearts.indexOf(card);
 			break;
 		case 2:
-			val = this.indexOf(clubs, card);
+			val = this.clubs.indexOf(card);
 			break;
 		case 3:
-			val = this.indexOf(diamonds, card);
+			val = this.diamonds.indexOf(card);
 			break;
 		default:
 			val = 0;

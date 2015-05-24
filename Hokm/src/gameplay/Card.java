@@ -43,8 +43,12 @@ public class Card implements Comparable<Card> {
 			return this.value - another.value;
 	}
 	
-	public boolean equals(Card another){
-		if(this.suit==another.suit && this.value==another.value)
+	@Override
+	public boolean equals(Object other){
+		if (!(other instanceof Card)) return false;
+		
+	    Card another = (Card) other;
+		if(this.suit==another.getSuit() && this.value==another.getValue())
 			return true;
 		else
 			return false;
