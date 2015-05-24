@@ -1,10 +1,12 @@
 package controller;
 
 import gameplay.Card;
+import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
 
 import java.util.List;
+import java.util.Scanner;
 
 import ai.AI;
 
@@ -18,21 +20,29 @@ public class AgentPlayer extends Player {
 	    this.human = false;
 	}
 
-	public Card action(List<Card> legalActions, State state, List<Player> players) {
-		Card card = AI.takeAction(legalActions, state, players, this);
+	@Override
+	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
+		System.out.println("available moves are:");
+		/*for(Card card: legalActions){
+			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
+		}*/
+		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
+		System.out.println("chosen card: "+ card.toString());
+		Scanner sc = new Scanner(System.in);
+		char enter = (char) sc.nextInt();
 		return card;
 	}
 
 	@Override
 	public SuitName hokmDet(List<Card> firstFive) {
-		// To be implemented.
-		return null;
-	}
-
-	@Override
-	public Card action(List<Card> legalActions) {
-		// TODO Auto-generated method stub
-		return null;
+		for(Card card: firstFive){
+			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
+		}
+		SuitName hokm = AI.hokm(firstFive);
+		System.out.println("hokm: "+ hokm);
+		Scanner sc = new Scanner(System.in);
+		char enter = (char) sc.nextInt();
+		return hokm;
 	}
 
 }

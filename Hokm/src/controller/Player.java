@@ -1,6 +1,7 @@
 package controller;
 
 import gameplay.Card;
+import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
 
@@ -85,7 +86,7 @@ public abstract class Player {
 		this.suitStatus.add(i, false);
 	}
 	
-	public abstract Card action(List<Card> legalActions);
+	public abstract Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue);
 	
 	public abstract SuitName hokmDet(List<Card> firstFive);
 	

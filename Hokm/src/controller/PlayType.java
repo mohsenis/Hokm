@@ -11,4 +11,8 @@ public enum PlayType {
 	PlayType(int type) {
 		this.type = type;
 	}
+	
+	public int getType(){
+		return this.type;
+	}
 }

@@ -1,6 +1,7 @@
 package gameplay;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CardValue {
 	ArrayList<Card> spades;
@@ -9,11 +10,16 @@ public class CardValue {
 	ArrayList<Card> clubs;
 
 	public CardValue() {
-		for (ValueName value : ValueName.values()) {
-			spades.add(new Card(SuitName.Spade, value));
-			diamonds.add(new Card(SuitName.Dimond, value));
-			hearts.add(new Card(SuitName.Heart, value));
-			clubs.add(new Card(SuitName.Club, value));
+		spades = new ArrayList<Card>();
+		diamonds = new ArrayList<Card>();
+		hearts = new ArrayList<Card>();
+		clubs = new ArrayList<Card>();
+		
+		for (ValueName valueName:ValueName.values()){
+			spades.add(new Card(SuitName.Spade,valueName));
+			hearts.add(new Card(SuitName.Heart,valueName));
+			clubs.add(new Card(SuitName.Club,valueName));
+			diamonds.add(new Card(SuitName.Dimond,valueName));
 		}
 	}
 
@@ -51,22 +57,33 @@ public class CardValue {
 			break;
 		}
 	}
+	
+	private int indexOf(List<Card> cardList, Card myCard){
+		int out=-1;
+		
+		for (int i=0;i<13;i++){
+			if (cardList.get(i).getValue()==myCard.getValue())
+				return i;
+		}
+		return out;
+	}
 
 	public int getValue(Card card) {
 		int s = card.getSuit();
 		int val;
 		switch (s) {
 		case 0:
-			val = this.spades.indexOf(card);
+			val = this.indexOf(spades,card);
+			//val = this.spades.indexOf(card);
 			break;
 		case 1:
-			val = this.hearts.indexOf(card);
+			val = this.indexOf(hearts, card);
 			break;
 		case 2:
-			val = this.clubs.indexOf(card);
+			val = this.indexOf(clubs, card);
 			break;
 		case 3:
-			val = this.diamonds.indexOf(card);
+			val = this.indexOf(diamonds, card);
 			break;
 		default:
 			val = 0;

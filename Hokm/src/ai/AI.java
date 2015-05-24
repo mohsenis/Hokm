@@ -7,6 +7,8 @@ import gameplay.State;
 import gameplay.SuitName;
 import gameplay.Game;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -16,6 +18,68 @@ public class AI {
 
 	private AI() {
 
+	}
+	
+	private final static double[] realValues = 
+		{ 	1.00,
+			1.00,
+			2.00,
+			2.00,
+			2.00,
+			2.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00
+		};
+	private final static double[][][] coEf = getCoEf();
+	
+	
+	private static double[][][] getCoEf() {
+		double[][] first = new double[][] { { 0.16, 0.3, 0.7, 1 },
+				{ 0.05, 0.1, 0.5, 1 } };
+
+		double[][] second = new double[][]{realValues,realValues};
+		
+		/*for (int i=0;i<2;i++){
+			for (int j=0;j<13;j++){
+				System.out.print(second[i][j]+"-");
+			}
+			System.out.println();
+		}*/
+		
+		double[][][] coEf = new double[2][4][13];
+
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < 4; j++) {
+				for (int k = 0; k < 13; k++) {
+					coEf[i][j][k] = first[i][j] * second[i][k];
+				}
+			}
+		}
+		return coEf;
+	}
+
+	private static boolean suitStatus(List<Card> played, List<Card> inHand,
+			SuitName suit) {
+
+		int n = 0;
+		for (Card card : played) {
+			if (card.getSuitName() == suit) {
+				n++;
+			}
+		}
+		for (Card card : inHand) {
+			if (card.getSuitName() == suit) {
+				n++;
+			}
+		}
+		if (n == 13)
+			return false;
+		return true;
 	}
 
 	private List<Card> possibleActions(State state, Player player) {
@@ -42,21 +106,38 @@ public class AI {
 	}
 
 	public static Card takeAction(List<Card> legalActions, State state,
-			List<Player> players, Player currentPlayer) {
-		int need = findNeed(state.getTeamScore(), state.getOpponentScore());
-		// List<Card> possibleActions()
-		return null;
+			List<Player> players, Player player, CardValue cardValue) {
+
+		List<Double> values = getActionsValues(legalActions, state, players,
+				player, cardValue);
+		Card action = legalActions.get(values.indexOf(Collections.max(values)));
+		return action;
 	}
 
-	/* returns card absolute value */
-	private static double cardAbsValue(Card card) {
-		double val = Math.pow(card.getValue() / 12, 2);
-		return val;
+	private static List<Double> getActionsValues(List<Card> legalActions,
+			State state, List<Player> players, Player player,
+			CardValue cardValue) {
+		List<Double> values = new ArrayList<Double>(legalActions.size());
+		int feature1 = findNeed(state.getTeamScore(), state.getOpponentScore())-1;
+		int feature2;
+		int feature3;
+		double coef;
+		for (Card card : legalActions) {
+			System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
+			feature2 = likelihood(card, state, players, player, cardValue)-1;
+			feature3 = card.getValue()-2;
+			coef = Math.round(coEf[feature1][feature2][feature3]*100000);
+			values.add(coef);
+			//System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
+			System.out.println("   "+feature1+"-"+feature2+"-"+feature3+"-"+coef);
+		}
+		return values;
 	}
 
+	/* returns urgency level */
 	private static int findNeed(int trick1, int trick2) {
 		int need = 1;
-		if (trick2 == 6) {
+		if (trick2 == 6 || trick1 == 6) {
 			need = 2;
 		} else if (trick2 == 5 && trick1 < 5) {
 			need = 2;
@@ -68,35 +149,17 @@ public class AI {
 		return need;
 	}
 
-	private static boolean suitStatus(List<Card> played, List<Card> inHand,
-			SuitName suit) {
-
-		int n = 0;
-
-		for (Card card : played) {
-			if (card.getSuitName() == suit) {
-				n++;
-			}
-		}
-		for (Card card : inHand) {
-			if (card.getSuitName() == suit) {
-				n++;
-			}
-		}
-
-		if (n == 13)
-			return false;
-
-		return true;
-	}
-
 	// returns the likelihood of taking the trick with a specific card
 	private static int likelihood(Card myCard, State state,
-			List<Player> players, Player player, SuitName hokm,
-			CardValue cardValue) {
+			List<Player> players, Player player, CardValue cardValue) {
+		SuitName hokm = state.getHokm();
 		int L = 3;
-
-		SuitName firstSuit = state.getOnTable().get(0).getSuitName(); // SuitName
+		SuitName firstSuit;
+		
+		if (state.getOnTable().isEmpty())
+			firstSuit=myCard.getSuitName();
+		else
+			firstSuit = state.getOnTable().get(0).getSuitName(); // SuitName
 																		// of
 																		// the
 																		// first
@@ -109,7 +172,6 @@ public class AI {
 				player.getInHand(), hokm);
 
 		Card op1Card;
-		Card op2Card;
 		Card mateCard;
 
 		Player op1;
@@ -118,6 +180,134 @@ public class AI {
 
 		switch (players.indexOf(player)) {
 		case 0:
+			op1 = players.get(1);
+			mate = players.get(2);
+			op2 = players.get(3);
+
+			if (myCard.getSuitName() == hokm) {
+				if (op1.getSuitStatus(hokm) && hokmSuitStatus) {
+					if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								// since op2 is the last who players it is more
+								// likely to lose the hand
+								L = 2;
+						} else {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+						}
+					} else {
+						if (cardValue.getValue(myCard) == 12)
+							L = 4;
+						else
+							L = 2;
+					}
+				} else {
+					if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								// since op2 is the last who players it is more
+								// likely to lose the hand
+								L = 2;
+						} else {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+						}
+					} else {
+						if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						} else {
+							L = 4;
+						}
+					}
+				}
+
+			} else {
+				if (op1.getSuitStatus(firstSuit) && firstSuitStatus) {
+					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 1;
+						} else {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+						}
+
+					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							L = 4;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 2;
+						} else {
+							L = 4;
+						}
+					} else {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 1;
+						} else {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						}
+					}
+
+				} else if (op1.getSuitStatus(hokm) && hokmSuitStatus) {
+					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
+						L = 1;
+					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						L = 3;
+					} else {
+						L = 1;
+					}
+				} else {
+					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 1;
+						}
+					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							L = 4;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 2;
+						} else {
+							L = 4;
+						}
+					} else {
+						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else
+								L = 2;
+						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
+							L = 1;
+						} else {
+							L = 4;
+						}
+					}
+				}
+			}
 
 			break;
 		case 1:
@@ -131,123 +321,135 @@ public class AI {
 				if (myCard.getSuitName() == hokm) {
 					if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							if (cardValue.getValue(myCard)==12)
-								L=4;
-							else if (myCard.getValue()<op1Card.getValue()
-									&& cardValue.getValue(op1Card)>9)
-								L=2;
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else if (cardValue.getValue(op1Card) == 12)
+								L = 1;
+							else if (myCard.getValue() < op1Card.getValue()
+									&& cardValue.getValue(op1Card) > 9)
+								L = 2;
 						} else {
-							if (cardValue.getValue(myCard)==12)
-								L=4;
-							else if (myCard.getValue()<op1Card.getValue())
-								L=1;
-							else if (cardValue.getValue(myCard)<9)
-								L=2;
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else if (myCard.getValue() < op1Card.getValue())
+								L = 1;
+							else if (cardValue.getValue(myCard) < 9)
+								L = 2;
 						}
 					} else {
 						if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							if (cardValue.getValue(myCard)==12)
-								L=4;
-							else if (myCard.getValue()<op1Card.getValue()
-									&& cardValue.getValue(op1Card)>9)
-								L=2;
-							else if (myCard.getValue()>op1Card.getValue())
-								L=4;
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else if (cardValue.getValue(op1Card) == 12)
+								L = 1;
+							else if (myCard.getValue() < op1Card.getValue()
+									&& cardValue.getValue(op1Card) > 9)
+								L = 2;
+							else if (myCard.getValue() > op1Card.getValue())
+								L = 4;
 						} else {
-							if (myCard.getValue()<op1Card.getValue())
-								L=1;
+							if (myCard.getValue() < op1Card.getValue())
+								L = 1;
 							else
-								L=4;
+								L = 4;
 						}
 					}
 				} else {
-						if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							if (cardValue.getValue(op1Card)>9)
-							L=2;
-						} else {
-							L=1;
-						}
+					if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
+						if (cardValue.getValue(op1Card) == 12)
+							L = 1;
+						else if (cardValue.getValue(op1Card) > 9)
+							L = 2;
+					} else {
+						L = 1;
+					}
 				}
 
 			} else {
 				if (myCard.getSuitName() == firstSuit) {
 					if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (cardValue.getValue(myCard)==12)
-								L=4;
-							else if (myCard.getValue()<op1Card.getValue()
-									&& cardValue.getValue(op1Card)>9)
-								L=2;
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else if (cardValue.getValue(op1Card) == 12)
+								L = 1;
+							else if (myCard.getValue() < op1Card.getValue()
+									&& cardValue.getValue(op1Card) > 9)
+								L = 2;
 
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							L=4;
+							L = 4;
 						} else {
-							if (cardValue.getValue(myCard)==12)
-								L=4;
-							else if (myCard.getValue()<op1Card.getValue())
-								L=1;
-							else if (myCard.getValue()>op1Card.getValue()
-									&& cardValue.getValue(op1Card)>9) //double check
-								L=3;
-							else
-								L=2; //why again?
+							if (cardValue.getValue(myCard) == 12)
+								L = 4;
+							else if (myCard.getValue() < op1Card.getValue())
+								L = 1;
+							else if (myCard.getValue() > op1Card.getValue()
+									&& cardValue.getValue(myCard) < 9)
+								L = 2;
 						}
-					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {//stop point.
+					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {// stop
+																			// point.
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-							L=1;
+							L = 1;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							L=3;
+							L = 3;
 						} else {
-							L=1;
+							L = 1;
 						}
 					} else {
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (myCard.getValue()>op1Card.getValue())
-								L=4;
-							else if (cardValue.getValue(op1Card)>9)
-								L=2;
+							if (myCard.getValue() > op1Card.getValue())
+								L = 4;
+							else if (cardValue.getValue(op1Card) == 12)
+								L = 1;
+							else if (cardValue.getValue(op1Card) > 9)
+								L = 2;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							L=4;
+							L = 4;
 						} else {
-							if (myCard.getValue()>op1Card.getValue())
-								L=4;
+							if (myCard.getValue() > op1Card.getValue())
+								L = 4;
 							else
-								L=1;
+								L = 1;
 						}
 					}
-				} else if (myCard.getSuitName() == hokm) {//changed
+				} else if (myCard.getSuitName() == hokm) {
 					if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
-						L=4;
+						L = 4;
 					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (cardValue.getValue(myCard)<9)
-								L=2;
+							if (cardValue.getValue(myCard) < 9)
+								L = 2;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
-							L=3;
+							L = 3;
 						} else {
-							if (cardValue.getValue(myCard)<9)
-								L=2;
+							if (cardValue.getValue(myCard) < 9)
+								L = 2;
 						}
 					} else {
-						L=4;
+						L = 4;
 					}
-				} else {//why we never checked op1.cardValue==12??
+				} else {
 					if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (cardValue.getValue(op1Card)>9)
-								L=2;
+							if (cardValue.getValue(op1Card) == 12)
+								L = 1;
+							else if (cardValue.getValue(op1Card) > 9)
+								L = 2;
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus)
-							L=1;
-						else
-							if (cardValue.getValue(op1Card)>9)
-								L=2;
+							L = 1;
+						else if (cardValue.getValue(op1Card) == 12)
+							L = 1;
+						else if (cardValue.getValue(op1Card) > 9)
+							L = 2;
 					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (op2.getSuitStatus(hokm) && hokmSuitStatus)
-							L=3;
+							L = 3;
 						else
-							L=4;
+							L = 4;
 					} else {
-						L=1;
+						L = 1;
 					}
 				}
 			}
@@ -257,7 +459,7 @@ public class AI {
 			op1Card = state.getOnTable().get(1); // The opponent player who has
 													// laid a card just before
 													// the me
-			// Card op2Card=state.getOnTable().get(3);
+
 			mateCard = state.getOnTable().get(0); // Teammate's card
 			op2 = players.get(3);
 
@@ -488,4 +690,28 @@ public class AI {
 		return L;
 	}
 
+	public static SuitName hokm(List<Card> firstFive){
+		SuitName hokm = SuitName.Spade;
+		int suitIndex;
+		int valueIndex;
+		double[][] nSuit = new double[2][4];
+		for(Card card: firstFive){
+			suitIndex = card.getSuit();
+			valueIndex = card.getValue()-2;
+			nSuit[0][suitIndex]++;
+			nSuit[1][suitIndex]+=realValues[valueIndex];
+		}
+		
+		double min=10;
+		for(SuitName suit: SuitName.values()){
+			int i = suit.getSuit();
+			if(nSuit[0][i]>2){
+				return suit;
+			}else if(nSuit[0][i]==2 && nSuit[1][i]<min){
+				min=nSuit[1][i];
+				hokm=suit;
+			}
+		}
+		return hokm;
+	}
 }

@@ -12,9 +12,7 @@ public class Game {
 	private List<Player> players;
 	private Deck deck;
 	private CardValue cardValue;
-	/*
-	 * private int team1Tricks; private int team2Tricks;
-	 */
+	
 	private State state;
 	private Player winner;
 	private boolean terminate;
@@ -24,8 +22,6 @@ public class Game {
 	private List<Card> played;
 	private List<Player> playedBy;
 	
-	/* private int hakemInd; */
-
 	public void setHakem(Player player) {
 		this.hakem = player;
 	}
@@ -34,17 +30,25 @@ public class Game {
 		return this.hakem;
 	}
 		
+
 	public Game(List<Player> players) {
 		this.players = players;
 		this.players.get(0).getTeam().resetTrickScore();
 		this.players.get(1).getTeam().resetTrickScore();
 		this.deck = new Deck();
-
+		
+		this.cardValue=new CardValue();
 		this.hakem = players.get(0);
 		this.terminate = false;
 		this.table = new ArrayList<Card>();
 		this.played = new ArrayList<Card>();
 		this.playedBy = new ArrayList<Player>();
+		
+		
+		/*Card tempCard = new Card(SuitName.Dimond, ValueName.Ten);
+		System.out.println("the value of "+ tempCard.toString()+"is: "+ this.cardValue.getValue(tempCard));
+		System.out.println(cardValue.diamonds.get(8)==(tempCard));*/
+		
 	}
 
 	public void setHokm(SuitName suitName) {
@@ -167,9 +171,9 @@ public class Game {
 				}
 				this.state = new State(this.table, player.getInHand(),
 						this.played, this.playedBy, player.getTeam().getTrickScore(), 
-						player.getInHand().size() - player.getTeam().getTrickScore(), this.hokm);
+						13 - player.getInHand().size() - player.getTeam().getTrickScore(), this.hokm);
 				
-				action = player.action(legalActions(this.state));
+				action = player.action(legalActions(this.state), this.state, this.players, this.cardValue);
 				if(!this.table.isEmpty() && this.table.get(0).getSuitName()!=action.getSuitName()){
 					player.updateSuitStatus(action.getSuitName());
 				}
@@ -179,7 +183,7 @@ public class Game {
 				this.table.add(action);
 				player.getInHand().remove(action); // update player's cards in
 													// hand
-				cardValue.updateValue(action); // remove the action card from the carValue list
+				this.cardValue.updateValue(action); // remove the action card from the carValue list
 				this.played.add(action); 
 				this.playedBy.add(player);
 			}

@@ -1,6 +1,8 @@
 package controller;
 
 import gameplay.Card;
+import gameplay.CardValue;
+import gameplay.State;
 import gameplay.SuitName;
 
 import java.util.List;
@@ -17,10 +19,10 @@ public class HumanPlayer extends Player {
 	}
 
 	@Override
-	public Card action(List<Card> legalActions) {
+	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
 		System.out.println("available moves are:");
 		for(Card card: legalActions){
-			System.out.println((legalActions.indexOf(card)+1)+") "+card.getValueName()+" of "+card.getSuitName());
+			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}
 		System.out.print("your move: ");
 		Scanner sc = new Scanner(System.in);
@@ -34,7 +36,7 @@ public class HumanPlayer extends Player {
 	public SuitName hokmDet(List<Card> firstFive) {
 		
 		for(Card card: firstFive){
-			System.out.println((firstFive.indexOf(card)+1)+") "+card.getValueName()+" of "+card.getSuitName());
+			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
 		}
 		
 		Scanner sc = new Scanner(System.in);
