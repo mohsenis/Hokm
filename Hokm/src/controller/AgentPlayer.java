@@ -5,6 +5,7 @@ import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,14 +23,18 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		System.out.println("available moves are:");
+		System.out.println("\nAvailable moves are:");
 		/*for(Card card: legalActions){
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}*/
 		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
-		System.out.println("chosen card: "+ card.toString());
-		Scanner sc = new Scanner(System.in);
-		char enter = (char) sc.nextInt();
+		System.out.println("\nChosen card: "+ card.toString());
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return card;
 	}
 
@@ -40,8 +45,12 @@ public class AgentPlayer extends Player {
 		}
 		SuitName hokm = AI.hokm(firstFive);
 		System.out.println("hokm: "+ hokm);
-		Scanner sc = new Scanner(System.in);
-		char enter = (char) sc.nextInt();
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return hokm;
 	}
 

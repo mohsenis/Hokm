@@ -20,11 +20,11 @@ public class HumanPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		System.out.println("available moves are:");
+		System.out.println("\nAvailable moves are:");
 		for(Card card: legalActions){
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}
-		System.out.print("your move: ");
+		System.out.print("\nYour move: ");
 		Scanner sc = new Scanner(System.in);
 		int action = sc.nextInt()-1;
 		Card card=legalActions.get(action);
@@ -40,7 +40,7 @@ public class HumanPlayer extends Player {
 		}
 		
 		Scanner sc = new Scanner(System.in);
-		System.out.print("Select hokm: ");
+		System.out.print("\nSelect hokm: ");
 		System.out.println("1: Spades, 2: Hearts, 3: Clubs, 4: Diamonds");
 		int hokm = sc.nextInt()-1;
 		SuitName suitName=firstFive.get(hokm).getSuitName();

@@ -29,7 +29,10 @@ public abstract class Player {
 		this.stateSequence = new ArrayList<State>();
 		this.actions = new ArrayList<Card>();
 		this.rewards = new ArrayList<Boolean>();
-		
+		initSuitStatus();		
+	}
+
+	public void initSuitStatus(){
 		this.suitStatus = new ArrayList<Boolean>();
 		for(@SuppressWarnings("unused") SuitName suit: SuitName.values()){
 			this.suitStatus.add(true);
@@ -83,7 +86,7 @@ public abstract class Player {
 	/* checks if the player has the suit in hand or not */
 	public void updateSuitStatus(SuitName suit){
 		int i = suit.getSuit();
-		this.suitStatus.add(i, false);
+		this.suitStatus.set(i, false);
 	}
 	
 	public abstract Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue);

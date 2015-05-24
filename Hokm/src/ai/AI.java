@@ -7,6 +7,7 @@ import gameplay.State;
 import gameplay.SuitName;
 import gameplay.Game;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,24 +40,17 @@ public class AI {
 	
 	
 	private static double[][][] getCoEf() {
-		double[][] first = new double[][] { { 0.16, 0.3, 0.7, 1 },
+		double[][] first = new double[][] { { 0.16, 0.3, 0.65, 2 },
 				{ 0.05, 0.1, 0.5, 1 } };
 
 		double[][] second = new double[][]{realValues,realValues};
-		
-		/*for (int i=0;i<2;i++){ 
-			for (int j=0;j<13;j++){
-				System.out.print(second[i][j]+"-");
-			}
-			System.out.println();
-		}*/
 		
 		double[][][] coEf = new double[2][4][13];
 
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 4; j++) {
 				for (int k = 0; k < 13; k++) {
-					coEf[i][j][k] = first[i][j] * second[i][k];
+					coEf[i][j][k] = new BigDecimal(first[i][j] * second[i][k]).setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
 				}
 			}
 		}
@@ -123,13 +117,14 @@ public class AI {
 		int feature3;
 		double coef;
 		for (Card card : legalActions) {
-			System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
+			
 			feature2 = likelihood(card, state, players, player, cardValue)-1;
-			feature3 = card.getValue()-2;
+			feature3 = cardValue.getValue(card);
 			coef = coEf[feature1][feature2][feature3];
 			values.add(coef);
-			//System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
-			System.out.println("   "+feature1+"-"+feature2+"-"+feature3+"-"+coef);
+			System.out.print((legalActions.indexOf(card)+1)+") "+card.toString()+"\t");
+			System.out.println((feature1+1)+"-"+(feature2+1)+"-"+feature3+"-"+coef);
+			
 		}
 		return values;
 	}
@@ -588,12 +583,13 @@ public class AI {
 								L = 2;
 
 					} else {
-
+						
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
 
+							if (cardValue.getValue(mateCard)==12)
+								L=4;
 							if (op1Card.getValue() > mateCard.getValue())
 								L = 1;
-
 							else if (op1Card.getValue() < mateCard.getValue()
 									&& cardValue.getValue(mateCard) < 9)
 								L = 2;
@@ -676,7 +672,8 @@ public class AI {
 
 			break;
 		case 3:
-			List<Card> tempTable = state.getOnTable();
+			List<Card> tempTable = new ArrayList<Card>();
+			tempTable.addAll(state.getOnTable());
 			tempTable.add(myCard);
 			Player winner = Game.detWinner(players, tempTable, hokm);
 
@@ -685,6 +682,7 @@ public class AI {
 				L = 4;
 			else
 				L = 1;
+			tempTable.remove(myCard);
 			break;
 		}
 		return L;
@@ -699,7 +697,7 @@ public class AI {
 			suitIndex = card.getSuit();
 			valueIndex = card.getValue()-2;
 			nSuit[0][suitIndex]++;
-			nSuit[1][suitIndex]+=realValues[valueIndex];
+			nSuit[1][suitIndex]+=valueIndex;
 		}
 		
 		double max=0;

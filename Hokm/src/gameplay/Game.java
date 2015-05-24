@@ -75,7 +75,10 @@ public class Game {
 	public void deal() {
 		shuffle(this.deck);
 		int j = 0;
+		
 		for (Player player : this.players) {
+			player.getInHand().clear();
+			player.initSuitStatus();
 			for (int i = 2; i <= 14; i++) {
 				player.getInHand().add(this.deck.getDeck().get(j));
 				j++;
@@ -85,7 +88,7 @@ public class Game {
 
 	public List<Card> legalActions(State state) {
 		List<Card> actions = new ArrayList<Card>();
-		System.out.println("on table: ");
+		System.out.println("\nOn table: ");
 		for (Card card : state.getOnTable()) {
 			System.out.println(card.getValueName() + " of "
 					+ card.getSuitName());
@@ -150,7 +153,7 @@ public class Game {
 		 * System.out.println(card.getValueName()+" of "+card.getSuitName()); }
 		 * }
 		 */
-		List<Card> firstFive = new ArrayList<Card>(5);
+		List<Card> firstFive = new ArrayList<Card>();
 		for (int i = 0; i < 5; i++) {
 			firstFive.add(this.players.get(0).getInHand().get(i));
 		}
@@ -164,18 +167,13 @@ public class Game {
 
 			for (Player player : players) {
 				sortHand(player.getInHand());
-				System.out.println(player.getName() + " cards:");
-				for (Card card : player.getInHand()) {
-					System.out.println(card.getValueName() + " of "
-							+ card.getSuitName());
-				}
 				this.state = new State(this.table, player.getInHand(),
 						this.played, this.playedBy, player.getTeam().getTrickScore(), 
 						13 - player.getInHand().size() - player.getTeam().getTrickScore(), this.hokm);
 				
 				action = player.action(legalActions(this.state), this.state, this.players, this.cardValue);
 				if(!this.table.isEmpty() && this.table.get(0).getSuitName()!=action.getSuitName()){
-					player.updateSuitStatus(action.getSuitName());
+					player.updateSuitStatus(this.table.get(0).getSuitName());
 				}
 				
 				player.getStateSequence().add(state);
@@ -183,13 +181,13 @@ public class Game {
 				this.table.add(action);
 				player.getInHand().remove(action); // update player's cards in
 													// hand
-				this.cardValue.updateValue(action); // remove the action card from the carValue list
 				this.played.add(action); 
 				this.playedBy.add(player);
 			}
 
 			this.winner = detWinner(this.players, this.table, this.hokm);
 			winner.getTeam().updateTrickScore();// update trick-scores
+			this.cardValue.updateValue(this.table);
 			this.table.clear(); // removing all cards from the table
 
 			players = GameBuilder.reorder(players, winner);
@@ -206,8 +204,6 @@ public class Game {
 		}
 
 		Player tmpHakem = hakem;
-		System.out.println(players.indexOf(hakem));
-		System.out.println((players.indexOf(hakem) + 1) % 4);
 		if (hakem.getTeam().getTrickScore() < 7) {
 			tmpHakem = players.get((players.indexOf(hakem) + 1) % 4);
 		}
