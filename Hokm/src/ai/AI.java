@@ -702,13 +702,13 @@ public class AI {
 			nSuit[1][suitIndex]+=realValues[valueIndex];
 		}
 		
-		double min=10;
+		double max=0;
 		for(SuitName suit: SuitName.values()){
 			int i = suit.getSuit();
 			if(nSuit[0][i]>2){
 				return suit;
-			}else if(nSuit[0][i]==2 && nSuit[1][i]<min){
-				min=nSuit[1][i];
+			}else if(nSuit[0][i]==2 && nSuit[1][i]>max){
+				max=nSuit[1][i];
 				hokm=suit;
 			}
 		}
