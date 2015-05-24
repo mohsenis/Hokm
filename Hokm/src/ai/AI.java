@@ -44,7 +44,7 @@ public class AI {
 
 		double[][] second = new double[][]{realValues,realValues};
 		
-		/*for (int i=0;i<2;i++){
+		/*for (int i=0;i<2;i++){ 
 			for (int j=0;j<13;j++){
 				System.out.print(second[i][j]+"-");
 			}
