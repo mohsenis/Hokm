@@ -21,19 +21,19 @@ public class AI {
 	}
 	
 	private final static double[] realValues = 
-		{ 	1.00,
+		{ 	3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			3.00,
+			2.00,
+			2.00,
+			2.00,
+			2.00,
 			1.00,
-			2.00,
-			2.00,
-			2.00,
-			2.00,
-			3.00,
-			3.00,
-			3.00,
-			3.00,
-			3.00,
-			3.00,
-			3.00
+			1.00
 		};
 	private final static double[][][] coEf = getCoEf();
 	
@@ -44,7 +44,7 @@ public class AI {
 
 		double[][] second = new double[][]{realValues,realValues};
 		
-		/*for (int i=0;i<2;i++){
+		/*for (int i=0;i<2;i++){ 
 			for (int j=0;j<13;j++){
 				System.out.print(second[i][j]+"-");
 			}
@@ -126,7 +126,7 @@ public class AI {
 			System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
 			feature2 = likelihood(card, state, players, player, cardValue)-1;
 			feature3 = card.getValue()-2;
-			coef = Math.round(coEf[feature1][feature2][feature3]*100000);
+			coef = coEf[feature1][feature2][feature3];
 			values.add(coef);
 			//System.out.print((legalActions.indexOf(card)+1)+") "+card.toString());
 			System.out.println("   "+feature1+"-"+feature2+"-"+feature3+"-"+coef);
