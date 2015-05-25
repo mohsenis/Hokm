@@ -321,14 +321,14 @@ public class AI {
 							else if (cardValue.getValue(op1Card) == 12)
 								L = 1;
 							else if (myCard.getValue() < op1Card.getValue()
-									&& cardValue.getValue(op1Card) > 9)
+									&& cardValue.getValue(op1Card) > 10)
 								L = 2;
 						} else {
 							if (cardValue.getValue(myCard) == 12)
 								L = 4;
 							else if (myCard.getValue() < op1Card.getValue())
 								L = 1;
-							else if (cardValue.getValue(myCard) < 9)
+							else if (cardValue.getValue(myCard) < 10)
 								L = 2;
 						}
 					} else {
@@ -338,7 +338,7 @@ public class AI {
 							else if (cardValue.getValue(op1Card) == 12)
 								L = 1;
 							else if (myCard.getValue() < op1Card.getValue()
-									&& cardValue.getValue(op1Card) > 9)
+									&& cardValue.getValue(op1Card) > 10)
 								L = 2;
 							else if (myCard.getValue() > op1Card.getValue())
 								L = 4;
@@ -353,7 +353,7 @@ public class AI {
 					if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (cardValue.getValue(op1Card) == 12)
 							L = 1;
-						else if (cardValue.getValue(op1Card) > 9)
+						else if (cardValue.getValue(op1Card) > 10)
 							L = 2;
 					} else {
 						L = 1;
@@ -369,7 +369,7 @@ public class AI {
 							else if (cardValue.getValue(op1Card) == 12)
 								L = 1;
 							else if (myCard.getValue() < op1Card.getValue()
-									&& cardValue.getValue(op1Card) > 9)
+									&& cardValue.getValue(op1Card) > 10)
 								L = 2;
 
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
@@ -380,7 +380,7 @@ public class AI {
 							else if (myCard.getValue() < op1Card.getValue())
 								L = 1;
 							else if (myCard.getValue() > op1Card.getValue()
-									&& cardValue.getValue(myCard) < 9)
+									&& cardValue.getValue(myCard) < 10)
 								L = 2;
 						}
 					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {// stop
@@ -398,7 +398,7 @@ public class AI {
 								L = 4;
 							else if (cardValue.getValue(op1Card) == 12)
 								L = 1;
-							else if (cardValue.getValue(op1Card) > 9)
+							else if (cardValue.getValue(op1Card) > 10)
 								L = 2;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
 							L = 4;
@@ -414,12 +414,12 @@ public class AI {
 						L = 4;
 					} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (mate.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (cardValue.getValue(myCard) < 9)
+							if (cardValue.getValue(myCard) < 10)
 								L = 2;
 						} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
 							L = 3;
 						} else {
-							if (cardValue.getValue(myCard) < 9)
+							if (cardValue.getValue(myCard) < 10)
 								L = 2;
 						}
 					} else {
@@ -430,13 +430,13 @@ public class AI {
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
 							if (cardValue.getValue(op1Card) == 12)
 								L = 1;
-							else if (cardValue.getValue(op1Card) > 9)
+							else if (cardValue.getValue(op1Card) > 10)
 								L = 2;
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus)
 							L = 1;
 						else if (cardValue.getValue(op1Card) == 12)
 							L = 1;
-						else if (cardValue.getValue(op1Card) > 9)
+						else if (cardValue.getValue(op1Card) > 10)
 							L = 2;
 					} else if (mate.getSuitStatus(hokm) && hokmSuitStatus) {
 						if (op2.getSuitStatus(hokm) && hokmSuitStatus)
@@ -470,10 +470,10 @@ public class AI {
 								L = 4;
 
 							else if ((myCard.getValue() > op1Card.getValue() && cardValue
-									.getValue(myCard) < 9)
+									.getValue(myCard) < 10)
 									|| (mateCard.getValue() > op1Card
 											.getValue() && cardValue
-											.getValue(mateCard) < 9))
+											.getValue(mateCard) < 10))
 								L = 2;
 
 							else if (op1Card.getValue() > myCard.getValue()
@@ -496,7 +496,7 @@ public class AI {
 								L = 4;
 							else if (mateCard.getValue() < op1Card.getValue())
 								L = 1;
-							else if (cardValue.getValue(mateCard) < 9)
+							else if (cardValue.getValue(mateCard) < 10)
 								L = 2;
 						} else {
 
@@ -515,8 +515,8 @@ public class AI {
 							if (cardValue.getValue(mateCard) == 12
 									|| cardValue.getValue(myCard) == 12)
 								L = 4;
-							else if (cardValue.getValue(mateCard) < 9
-									&& cardValue.getValue(myCard) < 9)
+							else if (cardValue.getValue(mateCard) < 10
+									&& cardValue.getValue(myCard) < 10)
 								L = 2;
 
 						} else {
@@ -527,7 +527,7 @@ public class AI {
 
 							if (cardValue.getValue(mateCard) == 12)
 								L = 4;
-							else if (cardValue.getValue(mateCard) < 9)
+							else if (cardValue.getValue(mateCard) < 10)
 								L = 2;
 
 						} else {
@@ -549,9 +549,9 @@ public class AI {
 								L = 1;
 
 							else if ((myCard.getValue() > op1Card.getValue()
-									&& (cardValue.getValue(myCard) < 9) || (mateCard
+									&& (cardValue.getValue(myCard) < 10) || (mateCard
 									.getValue() > op1Card.getValue() && cardValue
-									.getValue(mateCard) < 9)))
+									.getValue(mateCard) < 10)))
 								L = 2;
 
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
@@ -579,7 +579,7 @@ public class AI {
 
 							if (cardValue.getValue(myCard) == 12)
 								L = 4;
-							else if (cardValue.getValue(myCard) < 9)
+							else if (cardValue.getValue(myCard) < 10)
 								L = 2;
 
 					} else {
@@ -591,7 +591,7 @@ public class AI {
 							if (op1Card.getValue() > mateCard.getValue())
 								L = 1;
 							else if (op1Card.getValue() < mateCard.getValue()
-									&& cardValue.getValue(mateCard) < 9)
+									&& cardValue.getValue(mateCard) < 10)
 								L = 2;
 
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
@@ -620,7 +620,7 @@ public class AI {
 								L = 4;
 							} else if (op2.getSuitStatus(hokm)
 									&& hokmSuitStatus) {
-								if (myCard.getValue() < 9)
+								if (myCard.getValue() < 10)
 									L = 2;
 							} else {
 								L = 4;
@@ -635,8 +635,8 @@ public class AI {
 
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
 
-							if (cardValue.getValue(myCard) < 9
-									|| cardValue.getValue(mateCard) < 9)
+							if (cardValue.getValue(myCard) < 10
+									|| cardValue.getValue(mateCard) < 10)
 								L = 2;
 
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
@@ -650,7 +650,7 @@ public class AI {
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
 							L = 4;
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
-							if (cardValue.getValue(myCard) < 9)
+							if (cardValue.getValue(myCard) < 10)
 								L = 2;
 						} else {
 							L = 4;
@@ -659,7 +659,7 @@ public class AI {
 					} else {
 
 						if (op2.getSuitStatus(firstSuit) && firstSuitStatus) {
-							if (cardValue.getValue(mateCard) < 9)
+							if (cardValue.getValue(mateCard) < 10)
 								L = 2;
 						} else if (op2.getSuitStatus(hokm) && hokmSuitStatus) {
 							L = 1;
