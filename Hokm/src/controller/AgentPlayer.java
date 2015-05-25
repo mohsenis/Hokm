@@ -28,7 +28,7 @@ public class AgentPlayer extends Player {
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}*/
 		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
-		System.out.println("\nChosen card: "+ card.toString());
+		System.out.println("\n"+this.getName()+" playes: " + card.toString());
 		try {
 			System.in.read();
 		} catch (IOException e) {
@@ -44,13 +44,14 @@ public class AgentPlayer extends Player {
 			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
 		}*/
 		SuitName hokm = AI.hokm(firstFive);
-		System.out.println("hokm: "+ hokm);
-		try {
-			System.in.read();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println("The hokm is: "+ hokm);
+		System.out.println("\nPress \"Enter\" to continue...");
+			try {
+				System.in.read();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		return hokm;
 	}
 
