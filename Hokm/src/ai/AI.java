@@ -116,6 +116,7 @@ public class AI {
 		int feature2;
 		int feature3;
 		double coef;
+		System.out.println("\n"+player.getName()+"'s legal actions: ");
 		for (Card card : legalActions) {
 			feature2 = likelihood(card, state, players, player, cardValue)-1;
 			feature3 = cardValue.getValue(card);
@@ -150,13 +151,7 @@ public class AI {
 		if (state.getOnTable().isEmpty())
 			firstSuit=myCard.getSuitName();
 		else
-			firstSuit = state.getOnTable().get(0).getSuitName(); // SuitName
-																		// of
-																		// the
-																		// first
-																		// card
-																		// on
-																		// table
+			firstSuit = state.getOnTable().get(0).getSuitName(); 
 		boolean firstSuitStatus = suitStatus(state.getPlayed(),
 				player.getInHand(), firstSuit);
 		boolean hokmSuitStatus = suitStatus(state.getPlayed(),
@@ -685,7 +680,7 @@ public class AI {
 	}
 
 	public static SuitName hokm(List<Card> firstFive){
-		SuitName hokm = SuitName.Spade;
+		SuitName hokm = SuitName.Spades;
 		int suitIndex;
 		int valueIndex;
 		double[][] nSuit = new double[2][4];

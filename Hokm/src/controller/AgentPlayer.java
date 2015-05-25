@@ -23,25 +23,25 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		System.out.println("\nAvailable moves are:");
-		/*for(Card card: legalActions){
-			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
-		}*/
+		System.out.println("\nThe cards in agent's hand:");
+		for (Card card:this.getInHand()){
+			System.out.println(this.getInHand().indexOf(card)+1+") "+card.toString());
+		}
 		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
-		System.out.println("\n"+this.getName()+" playes: " + card.toString());
-		Scanner scanner = new Scanner(System.in);
+		System.out.println("\n"+this.getName()+" plays: " + card.toString());
+		System.out.println("Press \"Enter\" to continue...");
+		Scanner scanner = new Scanner(System.in); 
 		String line = scanner.nextLine();
 		return card;
 	}
 
 	@Override
 	public SuitName hokmDet(List<Card> firstFive) {
-		System.out.println();
 		for(Card card: firstFive){
 			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
 		}
 		SuitName hokm = AI.hokm(firstFive);
-		System.out.println("The hokm is: "+ hokm);
+		System.out.println("\nHokm: "+ hokm);
 		System.out.println("\nPress \"Enter\" to continue...");
 		Scanner scanner = new Scanner(System.in); 
 		String line = scanner.nextLine();

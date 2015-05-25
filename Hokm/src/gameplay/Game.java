@@ -88,7 +88,7 @@ public class Game {
 
 	public List<Card> legalActions(State state) {
 		List<Card> actions = new ArrayList<Card>();
-		System.out.println("\nCards on the table: ");
+		System.out.println("Cards on the table: ");
 		for (Card card : state.getOnTable()) {
 			System.out.println(card.toString());
 		}
@@ -157,7 +157,7 @@ public class Game {
 			firstFive.add(this.players.get(0).getInHand().get(i));
 		}
 		sortHand(firstFive);
-		System.out.print(players.get(0).getName() + " selects the Hokm... ");
+		System.out.println(players.get(0).getName() + " selects the Hokm... \n");
 		setHokm(this.players.get(0).hokmDet(firstFive));
 
 		while (players.get(0).getTeam().getTrickScore() < 7
