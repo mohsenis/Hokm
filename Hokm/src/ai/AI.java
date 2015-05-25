@@ -124,6 +124,8 @@ public class AI {
 			values.add(coef);
 			//System.out.print((legalActions.indexOf(card)+1)+") "+card.toString()+"\t\t");
 			//System.out.println((feature1+1)+"-"+(feature2+1)+"-"+feature3+"-"+coef);
+			System.out.printf("%-5s"+"%-22s", (legalActions.indexOf(card)+1)+") ",card.toString());
+			System.out.printf((feature1+1)+" - "+(feature2+1)+" - "+"%-2s"+" - "+coef+"\n",feature3);
 			
 		}
 		return values;
