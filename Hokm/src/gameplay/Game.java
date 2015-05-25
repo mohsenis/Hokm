@@ -88,7 +88,7 @@ public class Game {
 
 	public List<Card> legalActions(State state) {
 		List<Card> actions = new ArrayList<Card>();
-		System.out.println("\nCards on the table: ");
+		System.out.println("Cards on the table: ");
 		for (Card card : state.getOnTable()) {
 			System.out.println(card.toString());
 		}

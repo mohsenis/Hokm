@@ -687,7 +687,7 @@ public class AI {
 	}
 
 	public static SuitName hokm(List<Card> firstFive){
-		SuitName hokm = SuitName.Spade;
+		SuitName hokm = SuitName.Spades;
 		int suitIndex;
 		int valueIndex;
 		double[][] nSuit = new double[2][4];

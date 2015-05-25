@@ -16,10 +16,10 @@ public class CardValue {
 		clubs = new ArrayList<Card>();
 
 		for (ValueName valueName : ValueName.values()) {
-			spades.add(new Card(SuitName.Spade, valueName));
-			hearts.add(new Card(SuitName.Heart, valueName));
-			clubs.add(new Card(SuitName.Club, valueName));
-			diamonds.add(new Card(SuitName.Dimond, valueName));
+			spades.add(new Card(SuitName.Spades, valueName));
+			hearts.add(new Card(SuitName.Hearts, valueName));
+			clubs.add(new Card(SuitName.Clubs, valueName));
+			diamonds.add(new Card(SuitName.Dimonds, valueName));
 		}
 	}
 
