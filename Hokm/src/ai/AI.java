@@ -116,13 +116,14 @@ public class AI {
 		int feature2;
 		int feature3;
 		double coef;
+		System.out.println("\n"+player.getName()+"'s legal actions: ");
 		for (Card card : legalActions) {
 			feature2 = likelihood(card, state, players, player, cardValue)-1;
 			feature3 = cardValue.getValue(card);
 			coef = coEf[feature1][feature2][feature3];
 			values.add(coef);
-//			System.out.printf("%-5s"+"%-22s", (legalActions.indexOf(card)+1)+") ",card.toString());
-//			System.out.printf((feature1+1)+" - "+(feature2+1)+" - "+"%-2s"+" - "+coef+"\n",feature3);
+			System.out.printf("%-5s"+"%-22s", (legalActions.indexOf(card)+1)+") ",card.toString());
+			System.out.printf((feature1+1)+" - "+(feature2+1)+" - "+"%-2s"+" - "+coef+"\n",feature3);
 		}
 		return values;
 	}
