@@ -23,8 +23,8 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		System.out.println("\nAvailable moves are:");
-		/*for(Card card: legalActions){
+		/*System.out.println("\nAvailable moves are:");
+		for(Card card: legalActions){
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}*/
 		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
@@ -40,9 +40,9 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public SuitName hokmDet(List<Card> firstFive) {
-		for(Card card: firstFive){
+		/*for(Card card: firstFive){
 			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
-		}
+		}*/
 		SuitName hokm = AI.hokm(firstFive);
 		System.out.println("hokm: "+ hokm);
 		try {

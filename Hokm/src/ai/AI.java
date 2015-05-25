@@ -122,8 +122,8 @@ public class AI {
 			feature3 = cardValue.getValue(card);
 			coef = coEf[feature1][feature2][feature3];
 			values.add(coef);
-			System.out.print((legalActions.indexOf(card)+1)+") "+card.toString()+"\t\t");
-			System.out.println((feature1+1)+"-"+(feature2+1)+"-"+feature3+"-"+coef);
+			//System.out.print((legalActions.indexOf(card)+1)+") "+card.toString()+"\t\t");
+			//System.out.println((feature1+1)+"-"+(feature2+1)+"-"+feature3+"-"+coef);
 			
 		}
 		return values;

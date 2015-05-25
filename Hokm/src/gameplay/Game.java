@@ -90,8 +90,7 @@ public class Game {
 		List<Card> actions = new ArrayList<Card>();
 		System.out.println("\nOn table: ");
 		for (Card card : state.getOnTable()) {
-			System.out.println(card.getValueName() + " of "
-					+ card.getSuitName());
+			System.out.println(card.toString());
 		}
 
 		if (this.table.isEmpty()) {
