@@ -30,7 +30,8 @@ public class Card implements Comparable<Card> {
 	} 
 	
 	public String toString(){
-		return this.getValueName()+" of "+this.getSuitName();
+		 //this.getValueName()+" of "+this.getSuitName();
+		 return String.format("%-5s of %s", this.getValueName(), this.getSuitName());
 	}
 
 	@Override
