@@ -20,6 +20,11 @@ public class HumanPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
+		System.out.println("\nThe cards in your hand:");
+		for (Card card:this.getInHand()){
+			System.out.println(this.getInHand().indexOf(card)+1+") "+card.toString());
+		}
+		
 		System.out.println("\nAvailable moves are:");
 		for(Card card: legalActions){
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
