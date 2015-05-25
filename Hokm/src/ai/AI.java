@@ -41,7 +41,7 @@ public class AI {
 	
 	private static double[][][] getCoEf() {
 		double[][] first = new double[][] { { 0.16, 0.3, 0.65, 2 },
-				{ 0.05, 0.1, 0.5, 1 } };
+				{ 0.01, 0.07, 0.25, 1 } };
 
 		double[][] second = new double[][]{realValues,realValues};
 		
