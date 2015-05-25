@@ -23,35 +23,28 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		/*System.out.println("\nAvailable moves are:");
-		for(Card card: legalActions){
+		System.out.println("\nAvailable moves are:");
+		/*for(Card card: legalActions){
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}*/
 		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
 		System.out.println("\n"+this.getName()+" playes: " + card.toString());
-		try {
-			System.in.read();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Scanner scanner = new Scanner(System.in);
+		String line = scanner.nextLine();
 		return card;
 	}
 
 	@Override
 	public SuitName hokmDet(List<Card> firstFive) {
-		/*for(Card card: firstFive){
+		System.out.println();
+		for(Card card: firstFive){
 			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
-		}*/
+		}
 		SuitName hokm = AI.hokm(firstFive);
 		System.out.println("The hokm is: "+ hokm);
 		System.out.println("\nPress \"Enter\" to continue...");
-			try {
-				System.in.read();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		Scanner scanner = new Scanner(System.in); 
+		String line = scanner.nextLine();
 		return hokm;
 	}
 
