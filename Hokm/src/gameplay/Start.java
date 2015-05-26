@@ -7,10 +7,6 @@ import controller.HumanPlayer;
 
 public class Start {
 	public static void main(String[] args){
-		/*CardValue cv = new CardValue();
-		Card card = new Card(SuitName.Spade, ValueName.Ace);
-		System.out.println(cv.getSpades().indexOf(card));*/
-		
 		
 		GameBuilder gb = new GameBuilder();
 		

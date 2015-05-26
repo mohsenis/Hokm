@@ -10,7 +10,9 @@ import gameplay.Game;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import controller.Player;
@@ -98,12 +100,31 @@ public class AI {
 			return !player.getSuitStatus(card.getSuitName());
 		}
 	}
+	
+	public static void shuffleSuit(List<Card> legalActions, List<Integer> rand) {
+		Collections.sort(legalActions, new Comparator<Card>() {
+			public int compare(Card c1, Card c2) {
+				if (c1.getSuit() == c2.getSuit()) {
+					return c1.getValue() - c2.getValue();
+				}
+				return rand.indexOf(c1.getSuit()) - rand.indexOf(c2.getSuit());
+			}
+		});
+	}
 
 	public static Card takeAction(List<Card> legalActions, State state,
 			List<Player> players, Player player, CardValue cardValue) {
-
+		List<Integer> rand = new ArrayList<Integer>();
+		for(int i=0;i<4;i++){
+			rand.add(i);
+		}
+		long seed = System.nanoTime();
+		Collections.shuffle(rand, new Random(seed));
+		shuffleSuit(legalActions,rand);
+		
 		List<Double> values = getActionsValues(legalActions, state, players,
 				player, cardValue);
+		
 		Card action = legalActions.get(values.indexOf(Collections.max(values)));
 		return action;
 	}

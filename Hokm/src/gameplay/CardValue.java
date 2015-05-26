@@ -19,7 +19,7 @@ public class CardValue {
 			spades.add(new Card(SuitName.Spades, valueName));
 			hearts.add(new Card(SuitName.Hearts, valueName));
 			clubs.add(new Card(SuitName.Clubs, valueName));
-			diamonds.add(new Card(SuitName.Dimonds, valueName));
+			diamonds.add(new Card(SuitName.Diamonds, valueName));
 		}
 	}
 
