@@ -75,12 +75,14 @@ public class Game {
 	public void deal() {
 		shuffle(this.deck);
 		int j = 0;
-		
+		Card card;
 		for (Player player : this.players) {
 			player.getInHand().clear();
 			player.initSuitStatus();
 			for (int i = 2; i <= 14; i++) {
-				player.getInHand().add(this.deck.getDeck().get(j));
+				card=this.deck.getDeck().get(j);
+				player.getInHand().add(card);
+				player.getDist().played(card, player);
 				j++;
 			}
 		}
@@ -112,7 +114,7 @@ public class Game {
 
 	public static Player detWinner(List<Player> players, List<Card> table, SuitName hokm) {
 		int winner = 0;
-		for (int i = 1; i < GameBuilder.N_PLAYERS; i++) {
+		for (int i = 1; i < table.size(); i++) {
 			int value = table.get(i).getValue();
 			SuitName suit = table.get(i).getSuitName();
 			if (table.get(winner).getSuitName() == hokm) {
@@ -166,13 +168,20 @@ public class Game {
 
 			for (Player player : players) {
 				sortHand(player.getInHand());
-				this.state = new State(this.table, player.getInHand(),
-						this.played, this.playedBy, player.getTeam().getTrickScore(), 
+				this.state = new State(this.table, player.getInHand(),this.played, this.playedBy, 
+						player.getDist(), player.getTeam().getTrickScore(), 
 						13 - player.getInHand().size() - player.getTeam().getTrickScore(), this.hokm);
 				
 				action = player.action(legalActions(this.state), this.state, this.players, this.cardValue);
+				
+				for(Player p: this.players){
+					p.getDist().played(action, player);
+				}
 				if(!this.table.isEmpty() && this.table.get(0).getSuitName()!=action.getSuitName()){
 					player.updateSuitStatus(this.table.get(0).getSuitName());
+					for(Player p: this.players){
+						p.getDist().passed(this.table.get(0), player);
+					}
 				}
 				
 				player.getStateSequence().add(state);

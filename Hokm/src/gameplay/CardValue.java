@@ -5,9 +5,9 @@ import java.util.List;
 
 public class CardValue {
 	private List<Card> spades;
-	private ArrayList<Card> diamonds;
-	private ArrayList<Card> hearts;
-	private ArrayList<Card> clubs;
+	private List<Card> diamonds;
+	private List<Card> hearts;
+	private List<Card> clubs;
 
 	public CardValue() {
 		spades = new ArrayList<Card>();
@@ -23,6 +23,18 @@ public class CardValue {
 		}
 	}
 
+	public CardValue(CardValue other) {
+		this.spades = new ArrayList<Card>();
+		this.diamonds = new ArrayList<Card>();
+		this.hearts = new ArrayList<Card>();
+		this.clubs = new ArrayList<Card>();
+		
+		this.spades.addAll(other.spades);
+		this.diamonds.addAll(other.diamonds);
+		this.hearts.addAll(other.hearts);
+		this.clubs.addAll(other.clubs);
+	}
+	
 	public void updateValue(List<Card> onTable) {
 
 		for (Card card : onTable) {

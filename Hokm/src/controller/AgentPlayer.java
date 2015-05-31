@@ -5,14 +5,13 @@ import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
 import ai.AI;
 
 public class AgentPlayer extends Player {
-
+	
 	public AgentPlayer(String name,int i) {
 	    super();
 	    
@@ -23,11 +22,16 @@ public class AgentPlayer extends Player {
 
 	@Override
 	public Card action(List<Card> legalActions, State state, List<Player> players, CardValue cardValue) {
-		System.out.println("\nThe cards in agent's hand:");
+		/*System.out.println("\nThe cards in agent's hand:");
 		for (Card card:this.getInHand()){
 			System.out.println(this.getInHand().indexOf(card)+1+") "+card.toString());
+		}*/
+		Card card;
+		if(players.indexOf(this)==3){
+			card = AI.getAction(legalActions, state, players, this, cardValue);
+		}else{
+			card = AI.takeAction(legalActions, state, players, this, cardValue);
 		}
-		Card card = AI.takeAction(legalActions, state, players, this, cardValue);
 		System.out.println("\n"+this.getName()+" plays: " + card.toString());
 		System.out.println("Press \"Enter\" to continue...");
 		Scanner scanner = new Scanner(System.in); 
@@ -47,5 +51,7 @@ public class AgentPlayer extends Player {
 		String line = scanner.nextLine();
 		return hokm;
 	}
+	
+	 
 
 }

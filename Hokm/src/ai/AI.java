@@ -9,6 +9,7 @@ import gameplay.Game;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,8 +39,8 @@ public class AI {
 			1.00,
 			1.00
 		};
-	private final static double[][][] coEf = getCoEf();
 	
+	private final static double[][][] coEf = getCoEf();
 	
 	private static double[][][] getCoEf() {
 		double[][] first = new double[][] { { 0.16, 0.3, 0.65, 2 },
@@ -59,6 +60,60 @@ public class AI {
 		return coEf;
 	}
 
+	private static int getStateValue(State state, CardValue cardValue){
+		int stateValue=0;
+		stateValue = getInHandValue(state,cardValue)+getTrickScoreValue(state);
+		return stateValue;
+	}
+	
+	private static int getTrickScoreValue(State state){
+		int trick1 = state.getTeamScore();
+		int trick2 = state.getOpponentScore();
+		int trickScoreValue=trick1*10;
+		if (trick2 > 4 ) {
+			trickScoreValue-=(trick2-trick1)*10;
+		} else if (trick2 == 4 && trick1 < 2) {
+			trickScoreValue-=(trick2-trick1)*10;
+		} else if (trick2 == 3 && trick1 < 1) {
+			trickScoreValue-=(trick2-trick1)*10;
+		}
+		return trickScoreValue;
+	}
+	
+	private static int getInHandValue(State state, CardValue cardValue){
+		int[] cardValues = new int[]{1,1,1,1,1,2,2,2,2,4,6,8,10};
+		int inHandValue=0;
+		boolean h = false;
+		boolean[] hasSuits = new boolean[]{false, false, false, false};
+		for(Card card: state.getInHand()){
+			if(card.getSuit()==state.getHokm().getSuit()){
+				h=true;
+				inHandValue+=cardValues[cardValue.getValue(card)]*2;
+			}else{
+				hasSuits[card.getSuit()]=true;
+				inHandValue+=cardValues[cardValue.getValue(card)];
+			}
+		}
+		if(h){
+			for(boolean b: hasSuits){
+				if(!b){
+					inHandValue+=6;
+				}
+			}
+		}
+		return inHandValue;
+	}
+	
+	private static double[][] copyDist(double[][] other){
+		double[][] dist = new double[5][52];
+		for(int i=0;i<5;i++){
+			for(int j=0;j<52;j++){
+				dist[i][j]=other[i][j];
+			}
+		}
+		return dist;
+	}
+	
 	private static boolean suitStatus(List<Card> played, List<Card> inHand,
 			SuitName suit) {
 
@@ -76,6 +131,114 @@ public class AI {
 		if (n == 13)
 			return false;
 		return true;
+	}
+	
+	private static State getNewState(State state, Card myCard, Card oCard, Player oPlayer, List<Player> players){
+		State newState = new State(state);
+		newState.getInHand().remove(myCard);
+		newState.getPlayed().add(oCard);
+		newState.getPlayedBy().add(oPlayer);
+		newState.getCardDist().played(oCard, oPlayer);
+		if(!newState.getOnTable().isEmpty()){
+			if(newState.getOnTable().get(0).getSuitName()!=oCard.getSuitName()){
+				newState.getCardDist().passed(newState.getOnTable().get(0), oPlayer);;
+			}
+		}
+		
+		newState.getOnTable().add(oCard);
+		return newState;
+	}
+	
+	public static Card getAction(List<Card> legalActions, State state,
+			List<Player> players, Player player, CardValue cardValue){
+		Card bestAction = legalActions.get(0);
+		double maxReward = 0.0;
+		double actionReward;
+		System.out.println("\n"+player.getName()+"'s legal actions: ");
+		
+		for(Card card: legalActions){
+			actionReward = getActionReward(card, state, players, cardValue, player);
+			System.out.printf("%-5s"+"%-22s"+actionReward+"\n", (legalActions.indexOf(card)+1)+") ",card.toString());
+			
+			if(maxReward < actionReward){
+				maxReward=actionReward;
+				bestAction = card;
+			}
+		}
+		return bestAction;
+	}
+	
+	private static double getActionReward(Card myCard, State oldState, List<Player> players, CardValue oldCardValue, Player me){
+		
+		CardValue cv1 = new CardValue(oldCardValue);// update this later when table is complete
+		
+		double actionReward = 0.0;
+		
+		SuitName hokm = oldState.getHokm();
+		SuitName firstSuit;
+		
+		if (oldState.getOnTable().isEmpty())
+			firstSuit=myCard.getSuitName();
+		else
+			firstSuit = oldState.getOnTable().get(0).getSuitName();
+
+		Card op1Card;
+		Card mateCard;
+
+		Player op1;
+		Player op2;
+		Player mate;
+		
+		switch (oldState.getOnTable().size()) {
+		case 0:
+			op1 = players.get(1);
+			mate = players.get(2);
+			op2 = players.get(3);
+			
+			
+			
+			break;
+		case 1:
+			//op1Card = s1.getOnTable().get(0);
+			op2 = players.get(2);
+			mate = players.get(3);
+			
+			break;
+		case 2:
+			//mateCard = s1.getOnTable().get(0);
+			//op1Card = s1.getOnTable().get(1); 
+			op2 = players.get(3);
+			
+			
+			
+			break;
+		case 3:
+			State newState1 = getNewState(oldState, myCard, myCard, me, players);
+			cv1.updateValue(newState1.getOnTable());
+			
+			Player winner = Game.detWinner(players, newState1.getOnTable(), hokm);
+			if (winner == me.getTeam().getPlayer1() || winner == me.getTeam().getPlayer2()){
+				newState1.updateTeamScore();
+			}else{
+				newState1.updateOpponentScore();
+			}
+			actionReward = getStateValue(newState1, cv1);
+			
+			break;
+		}
+		
+		return actionReward;
+	}
+	
+	private List<SuitName> getOtherSuits(SuitName[] suitnames){
+		List<SuitName> suitNames = new ArrayList<SuitName>(Arrays.asList(suitnames));
+		List<SuitName> suits = new ArrayList<SuitName>();
+		for(SuitName s: SuitName.values()){
+			if(!suitNames.contains(s)){
+				suits.add(s);
+			}
+		}
+		return suits;
 	}
 
 	private List<Card> possibleActions(State state, Player player) {

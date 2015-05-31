@@ -1,6 +1,7 @@
 package controller;
 
 import gameplay.Card;
+import gameplay.CardDist;
 import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
@@ -20,16 +21,22 @@ public abstract class Player {
 	private List<Boolean> rewards;
 	
 	private List<Boolean> suitStatus;
+	private CardDist cardsDist;
 	
 	public Player(){
 		this.name = "";
-		this.index = 0;
 		
 		this.inHand = new ArrayList<Card>();
 		this.stateSequence = new ArrayList<State>();
 		this.actions = new ArrayList<Card>();
 		this.rewards = new ArrayList<Boolean>();
-		initSuitStatus();		
+		initSuitStatus();	
+		
+		this.cardsDist = new CardDist();
+	}
+	
+	public CardDist getDist(){
+		return this.cardsDist;
 	}
 
 	public void initSuitStatus(){

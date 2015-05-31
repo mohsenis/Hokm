@@ -25,4 +25,13 @@ public enum ValueName {
     public int getValue() {
         return this.value;
     }
+    
+    public static ValueName getValueName(int v) {
+    	for(ValueName value: ValueName.values()){
+    		if(value.getValue()==v){
+    			return value;
+    		}
+    	}
+        return ValueName.Two;
+    }
 }
