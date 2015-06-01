@@ -1,5 +1,6 @@
 package gameplay;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
@@ -53,6 +54,14 @@ public class CardDist {
 				this.places[i][p] -= 1;
 			}
 		}
+		
+		int sum=0;
+		for (int i=0;i<13;i++)
+			sum+=this.cards[s][i];
+		
+		if (sum==0)
+			for (int i=0;i<4;i++)
+				this.places[s][i]=0;
 	}
 	
 	public void passed(Card card, Player player){
@@ -73,7 +82,7 @@ public class CardDist {
 			sumCards += this.cards[s][i];
 		}
 		int sumPlaces = 0;
-		for(int i=0;i<13;i++){
+		for(int i=0;i<4;i++){
 			sumPlaces += this.places[s][i];
 		}
 		
@@ -108,7 +117,7 @@ public class CardDist {
 			sumCards += this.cards[s][i];
 		}
 		int sumPlaces = 0;
-		for(int i=0;i<13;i++){
+		for(int i=0;i<4;i++){
 			sumPlaces += this.places[s][i];
 		}
 		
@@ -128,7 +137,7 @@ public class CardDist {
 			sumCards += this.cards[s][i];
 		}
 		int sumPlaces = 0;
-		for(int i=0;i<13;i++){
+		for(int i=0;i<4;i++){
 			sumPlaces += this.places[s][i];
 		}
 		
@@ -152,7 +161,7 @@ public class CardDist {
 	public Card smallestSuit(SuitName suit){
 		Card card;
 		int s = suit.getSuit();
-		int value = 0;
+		int value = 2;
 		for(int i=0;i<13;i++){
 			if(this.cards[s][i]==1){
 				value = i+2;
@@ -167,7 +176,7 @@ public class CardDist {
 		Card card;
 		int s = c.getSuit();
 		int v = c.getValue()-2;
-		int value = 0;
+		int value = 2;
 		for(int i=0;i<v;i++){
 			if(this.cards[s][i]==1){
 				value = i+2;
@@ -182,7 +191,7 @@ public class CardDist {
 		Card card;
 		int s = c.getSuit();
 		int v = c.getValue()-2;
-		int value = 0;
+		int value = 2;
 		for(int i=v+1;i<13;i++){
 			if(this.cards[s][i]==1){
 				value = i+2;
@@ -196,7 +205,7 @@ public class CardDist {
 	public Card smallestSuits(List<SuitName> suits, Player player){
 		Card card = new Card(SuitName.Clubs, ValueName.Two);
 		Card c;
-		int value = 20;
+		int value = 14;
 		for(SuitName suit: suits){
 			if(prSuit(suit, player)==0){
 				continue;
@@ -208,5 +217,21 @@ public class CardDist {
 			}
 		}
 		return card;
+	}
+	
+	public List<Card> possibleActions(Player player){
+		int p=player.getIndex();
+		List<Card> remainingCards=new ArrayList<Card>();
+		for(SuitName suit:SuitName.values()){
+			int i=suit.getSuit();
+			if (this.places[i][p]==0)
+				continue;
+			for (int j=0;j<13;j++){
+				if (this.cards[i][j]==1){
+					remainingCards.add(new Card(suit,ValueName.getValueName(j+2)));
+				}
+			}
+		}
+		return remainingCards;
 	}
 }
