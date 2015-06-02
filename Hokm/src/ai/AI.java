@@ -97,6 +97,7 @@ public class AI {
 		return inHandValue;
 	}
 
+	
 	private static boolean suitStatus(List<Card> played, List<Card> inHand,
 			SuitName suit) {
 
@@ -155,8 +156,9 @@ public class AI {
 		return bestAction;
 	}
 
-	private static double getActionReward(Card myCard, State oldState,
+	public static double getActionReward(Card myCard, State oldState,
 			List<Player> players, CardValue oldCardValue, Player me) {
+//		System.out.println("getActionRewards - ran");
 		State newState = new State(oldState);
 		newState.getInHand().remove(myCard);
 		int myInd=players.indexOf(me);
