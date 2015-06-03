@@ -1,13 +1,14 @@
 package controller;
 
 import gameplay.Card;
-import gameplay.CardDist;
 import gameplay.CardValue;
 import gameplay.State;
 import gameplay.SuitName;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import ai.CardDist;
 
 public abstract class Player {
 	protected String name;

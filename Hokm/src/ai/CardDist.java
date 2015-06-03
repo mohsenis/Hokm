@@ -1,4 +1,8 @@
-package gameplay;
+package ai;
+
+import gameplay.Card;
+import gameplay.SuitName;
+import gameplay.ValueName;
 
 import java.util.ArrayList;
 import java.util.List;

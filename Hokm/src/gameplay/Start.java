@@ -1,13 +1,14 @@
 package gameplay;
 
+import java.net.MalformedURLException;
 import java.util.Scanner;
 
 import controller.AgentPlayer;
 import controller.HumanPlayer;
 
 public class Start {
-	public static void main(String[] args){
-		
+	public static void main(String[] args) throws MalformedURLException{
+				
 		GameBuilder gb = new GameBuilder();
 		
 		Scanner sc = new Scanner(System.in);

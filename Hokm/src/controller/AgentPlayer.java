@@ -30,6 +30,7 @@ public class AgentPlayer extends Player {
 		card = AI.getAction(legalActions, state, players, this, cardValue);
 		System.out.println("\n"+this.getName()+" plays: " + card.toString());
 		System.out.println("Press \"Enter\" to continue...");
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in); 
 		scanner.nextLine();
 		return card;
@@ -43,6 +44,7 @@ public class AgentPlayer extends Player {
 		SuitName hokm = AI.hokm(firstFive);
 		System.out.println("\nHokm: "+ hokm);
 		System.out.println("\nPress \"Enter\" to continue...");
+		@SuppressWarnings("resource")
 		Scanner scanner = new Scanner(System.in); 
 		scanner.nextLine();
 		return hokm;

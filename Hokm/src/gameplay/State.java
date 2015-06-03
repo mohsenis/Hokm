@@ -3,6 +3,7 @@ package gameplay;
 import java.util.ArrayList;
 import java.util.List;
 
+import ai.CardDist;
 import controller.Player;
 
 public class State {

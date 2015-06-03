@@ -6,7 +6,6 @@ import controller.Player;
 import gameplay.Card;
 import gameplay.CardValue;
 import gameplay.Game;
-import gameplay.GameBuilder;
 import gameplay.State;
 import gameplay.SuitName;
 import gameplay.ValueName;
@@ -33,9 +32,11 @@ public class LookTree {
 		if (firstSuit==hokm){
 			AI.track.add(1);
 			pr1=newState.getCardDist().prGreater(oCard, op1);
+			AI.pr.add(pr1);
 			c1=newState.getCardDist().smallestGreater(oCard);
 			r1=case1(myInd, c1, newState, players, cv, op1);
 			pr2=newState.getCardDist().prLess(oCard, op1);
+			AI.pr.add(pr2);
 			c2=newState.getCardDist().smallestLess(oCard);
 			r2=case1(myInd, c2, newState, players, cv, op1);
 			c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[]{hokm}),op1);
@@ -46,11 +47,14 @@ public class LookTree {
 			AI.track.add(2);
 			pr1=newState.getCardDist().prGreater(oCard, op1);
 			c1=newState.getCardDist().smallestGreater(oCard);
+			AI.pr.add(pr1);
 			r1=case1(myInd, c1, newState, players, cv, op1);
 			pr2=newState.getCardDist().prLess(oCard, op1);
+			AI.pr.add(pr2);
 			c2=newState.getCardDist().smallestLess(oCard);
 			r2=case1(myInd, c2, newState, players, cv, op1);
 			pr3 = newState.getCardDist().prSuit(hokm, op1);
+			AI.pr.add(pr3);
 			c3 = newState.getCardDist().smallestSuit(hokm);
 			r3 = case1(myInd, c3, newState, players, cv, op1);
 			c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op1);
@@ -87,9 +91,11 @@ public class LookTree {
 				if (cv.getValue(bestCardOnTable) <= 9) {
 					AI.track.add(3);
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestGreater(betterCard);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
+					AI.pr.add(pr2);
 					c2= newState.getCardDist().smallestLess(betterCard);
 					r2 = case2(myInd, c2, newState, players, cv, op2);
 					c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[]{hokm}),op2);
@@ -100,6 +106,7 @@ public class LookTree {
 				} else {
 					AI.track.add(4);
 					pr1 = newState.getCardDist().prSuit(hokm, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestSuit(hokm);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					c2 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[]{hokm}),op2);
@@ -111,12 +118,15 @@ public class LookTree {
 				if (cv.getValue(bestCardOnTable) <= 9) {
 					AI.track.add(5);
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestGreater(betterCard);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
+					AI.pr.add(pr2);
 					c2= newState.getCardDist().smallestLess(betterCard);
 					r2 = case2(myInd, c2, newState, players, cv, op2);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
+					AI.pr.add(pr3);
 					c3 = newState.getCardDist().smallestSuit(hokm);
 					r3 = case2(myInd, c3, newState, players, cv, op2);
 					c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
@@ -126,9 +136,11 @@ public class LookTree {
 				}else{
 					AI.track.add(6);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op2);
+					AI.pr.add(pr2);
 					c2= newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
 					r2=case2(myInd, c2, newState, players, cv, op2);
 					c3 = newState.getCardDist().smallestSuit(hokm);
@@ -141,9 +153,11 @@ public class LookTree {
 			if (firstSuit == hokm) {
 				AI.track.add(7);
 				pr1=newState.getCardDist().prGreater(bestCardOnTable, op2);
+				AI.pr.add(pr1);
 				c1=newState.getCardDist().smallestGreater(bestCardOnTable);
 				r1 = case2(myInd, c1, newState, players, cv, op2);
 				pr2=newState.getCardDist().prLess(bestCardOnTable, op2);
+				AI.pr.add(pr2);
 				c2=newState.getCardDist().smallestLess(bestCardOnTable);
 				r2 = case2(myInd, c2, newState, players, cv, op2);
 				c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[]{hokm}),op2);
@@ -154,12 +168,15 @@ public class LookTree {
 				if (bestCardOnTable.getSuitName() == firstSuit) {
 					AI.track.add(8);
 					pr1=newState.getCardDist().prGreater(bestCardOnTable, op2);
+					AI.pr.add(pr1);
 					c1=newState.getCardDist().smallestGreater(bestCardOnTable);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
+					AI.pr.add(pr2);
 					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
 					r2 = case2(myInd, c2, newState, players, cv, op2);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
+					AI.pr.add(pr3);
 					c3 = newState.getCardDist().smallestSuit(hokm);
 					r3 = case2(myInd, c3, newState, players, cv, op2);
 					c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
@@ -169,12 +186,15 @@ public class LookTree {
 				}else{
 					AI.track.add(9);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
 					r1 = case2(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prGreater(bestCardOnTable, op2);
+					AI.pr.add(pr2);
 					c2= newState.getCardDist().smallestGreater(bestCardOnTable);
 					r2 = case2(myInd, c2, newState, players, cv, op2);
 					pr3 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op2);
+					AI.pr.add(pr3);
 					c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
 					r3 = case2(myInd, c3, newState, players, cv, op2);
 					c4 = newState.getCardDist().smallestSuit(hokm);
@@ -217,6 +237,7 @@ public class LookTree {
 			if (firstSuit == hokm) {
 				AI.track.add(10);
 				pr1 = newState.getCardDist().prSuit(hokm, op2);
+				AI.pr.add(pr1);
 				c1 = newState.getCardDist().smallestSuit(hokm);
 				r1 = case3(myInd, c1, newState, players, cv, op2);
 				c2 = newState.getCardDist().smallestSuits(
@@ -233,6 +254,7 @@ public class LookTree {
 				pr2 = newState.getCardDist().prSuits(
 						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
 						op2);
+				AI.pr.add(pr2);
 				c2 = newState.getCardDist().smallestSuits(
 						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
 						op2);
@@ -247,9 +269,11 @@ public class LookTree {
 			if (firstSuit == hokm) {
 				AI.track.add(12);
 				pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
+				AI.pr.add(pr1);
 				c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
 				r1 = case3(myInd, c1, newState, players, cv, op2);
 				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
+				AI.pr.add(pr2);
 				c2 = newState.getCardDist().smallestLess(bestCardOnTable);
 				r2 = case3(myInd, c2, newState, players, cv, op2);
 				c3 = newState.getCardDist().smallestSuits(
@@ -263,13 +287,16 @@ public class LookTree {
 					AI.track.add(13);
 					pr1 = newState.getCardDist()
 							.prGreater(bestCardOnTable, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
 					r1 = case3(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
+					AI.pr.add(pr2);
 					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
 					r2 = case3(myInd, c2, newState, players, cv, op2);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
+					AI.pr.add(pr3);
 					c3 = newState.getCardDist().smallestSuit(hokm);
 					r3 = case3(myInd, c3, newState, players, cv, op2);
 					c4 = newState.getCardDist()
@@ -286,10 +313,12 @@ public class LookTree {
 				} else {
 					AI.track.add(14);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
+					AI.pr.add(pr1);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
 					r1 = case3(myInd, c1, newState, players, cv, op2);
 					pr2 = newState.getCardDist()
 							.prGreater(bestCardOnTable, op2);
+					AI.pr.add(pr2);
 					c2 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
 					r2 = case3(myInd, c2, newState, players, cv, op2);
@@ -297,6 +326,7 @@ public class LookTree {
 							.prSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
+					AI.pr.add(pr3);
 					c3 = newState.getCardDist()
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
@@ -350,6 +380,7 @@ public class LookTree {
 			for ()
 		}*/
 		actionReward = AI.getStateValue(newState, cv);
+		AI.value.add(AI.getStateValue(newState, cv));
 		return actionReward;
 	}
 }

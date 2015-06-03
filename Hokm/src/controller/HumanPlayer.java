@@ -30,6 +30,7 @@ public class HumanPlayer extends Player {
 			System.out.println((legalActions.indexOf(card)+1)+") "+card.toString());
 		}
 		System.out.print("\nYour move: ");
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		int action = sc.nextInt()-1;
 		Card card=legalActions.get(action);
@@ -44,6 +45,7 @@ public class HumanPlayer extends Player {
 			System.out.println((firstFive.indexOf(card)+1)+") "+card.toString());
 		}
 		
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 		System.out.print("\nSelect hokm: ");
 		System.out.println("1: Spades, 2: Hearts, 3: Clubs, 4: Diamonds");

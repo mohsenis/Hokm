@@ -2,7 +2,6 @@ package ai;
 
 import gameplay.Card;
 import gameplay.CardValue;
-import gameplay.Deck;
 import gameplay.State;
 import gameplay.SuitName;
 import gameplay.Game;
@@ -28,6 +27,8 @@ public class AI {
 			3.00, 3.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00 };
 
 	public static List<Integer> track=new ArrayList<Integer>();
+	public static List<Integer> value=new ArrayList<Integer>();
+	public static List<Double> pr=new ArrayList<Double>();
 	
 	private final static double[][][] coEf = getCoEf();
 
@@ -61,7 +62,7 @@ public class AI {
 	private static int getTrickScoreValue(State state) {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
-		int trickScoreValue = trick1 * 10;
+		int trickScoreValue = trick1 * 30;
 		if (trick2 > 4) {
 			trickScoreValue -= (trick2 - trick1) * 10;
 		} else if (trick2 == 4 && trick1 < 2) {
@@ -140,11 +141,15 @@ public class AI {
 		double maxReward = 0.0;
 		double actionReward;
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
-
+		
 		for (Card card : legalActions) {
 			actionReward = getActionReward(card, state, players, cardValue,
 					player);
-			System.out.printf("%-5s" + "%-22s" + "%-18s" + "\t" + track.toString() + "\n",
+			for(Double d:pr){
+				int i = pr.indexOf(d);
+				pr.set(i, ((double) Math.round(d * 100)) / 100);
+			}
+			System.out.printf("%-5s" + "%-22s" + "%-18s" + "\t" + track.toString() + "\n" /*+ pr.toString()+"\n" + value.toString()+"\n"+"\n"+"\n"  */ ,
 					(legalActions.indexOf(card) + 1) + ") ", card.toString(),actionReward);
 
 			if (maxReward < actionReward) {
@@ -162,6 +167,8 @@ public class AI {
 		int myInd=players.indexOf(me);
 		double actionReward = 0.0;
 		track.clear();
+		value.clear();
+		pr.clear();
 		switch (oldState.getOnTable().size()) {
 		case 0:
 			actionReward=LookTree.case0(myInd, myCard, newState, players, oldCardValue, me);
