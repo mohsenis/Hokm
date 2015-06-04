@@ -28,7 +28,7 @@ public class AgentPlayer extends Player {
 		}*/
 		Card card;
 		
-		if(players.indexOf(this)==1){
+		if(/*players.indexOf(this)==1*/true){
 			card = AI.getAction(legalActions, state, players, this, cardValue);
 		}else{
 			card = AI.takeAction(legalActions, state, players, this, cardValue);

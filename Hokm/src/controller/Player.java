@@ -35,6 +35,10 @@ public abstract class Player {
 		this.cardsDist = new CardDist();
 	}
 	
+	public void newDist(){
+		this.cardsDist = new CardDist();
+	}
+	
 	public CardDist getDist(){
 		return this.cardsDist;
 	}

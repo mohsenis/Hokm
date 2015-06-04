@@ -76,6 +76,9 @@ public class GameBuilder {
 			}
 			
 			System.out.println("Total score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
+			for(Player player:players){
+				player.newDist();
+			}
 			game = new Game(players);
 		}
 		

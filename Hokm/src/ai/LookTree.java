@@ -391,14 +391,22 @@ public class LookTree {
 		cv.updateValue(newState.getOnTable());
 
 		Player winner = Game.detWinner(players, newState.getOnTable(), hokm);
+		boolean win=false;
+		boolean self=false;
+		Card card = newState.getOnTable().get(myInd);
 		if (winner == players.get(myInd).getTeam().getPlayer1()
 				|| winner == players.get(myInd).getTeam().getPlayer2()) {
 			newState.updateTeamScore();
+			win=true;
+			
+			if(winner == players.get(myInd)){
+				self = true;
+			}
 		} else {
 			newState.updateOpponentScore();
 		}
 		List<Card> possibleMoves;
-		if (winner.getIndex() == myInd)
+		if (winner == players.get(myInd))
 			possibleMoves = newState.getInHand();
 		else
 			possibleMoves = newState.getCardDist().possibleActions(winner);
@@ -406,15 +414,15 @@ public class LookTree {
 		players = GameBuilder.reorder(players, winner);
 		newState.getOnTable().clear();
 		
-		while (horizon > 0) {
+		/*while (horizon > 0) {
 //			System.out.println(horizon);
 			horizon--;
 			for (Card card : possibleMoves) {
 				actionReward += AI.getActionReward(card, newState, players, cv,
 						players.get(0), horizon);
 			}
-		}
-		actionReward = AI.getStateValue(newState, cv);
+		}*/
+		actionReward = AI.getStateValue(newState, cv, win, self, card);
 		return actionReward;
 	}
 }

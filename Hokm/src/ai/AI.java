@@ -24,6 +24,8 @@ public class AI {
 
 	}
 
+	static int myInd=0;
+	
 	private final static double[] realValues = { 3.00, 3.00, 3.00, 3.00, 3.00,
 			3.00, 3.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00 };
 
@@ -51,17 +53,17 @@ public class AI {
 		return coEf;
 	}
 
-	public static int getStateValue(State state, CardValue cardValue) {
+	public static int getStateValue(State state, CardValue cardValue, boolean win, boolean self, Card card) {
 		int stateValue = 0;
 		stateValue = getInHandValue(state, cardValue)
-				+ getTrickScoreValue(state);
+				+ getTrickScoreValue(state, win, self, card);
 		return stateValue;
 	}
 
 	private static int getTrickScoreValue(State state) {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
-		int trickScoreValue = trick1 * 10;
+		int trickScoreValue = trick1 * 20;
 		if (trick2 > 4) {
 			trickScoreValue -= (trick2 - trick1) * 10;
 		} else if (trick2 == 4 && trick1 < 2) {
@@ -69,6 +71,29 @@ public class AI {
 		} else if (trick2 == 3 && trick1 < 1) {
 			trickScoreValue -= (trick2 - trick1) * 10;
 		}
+		return trickScoreValue;
+	}
+	
+	private static int getTrickScoreValue(State state, boolean win, boolean self, Card card) {
+		int trick1 = state.getTeamScore();
+		int trick2 = state.getOpponentScore();
+		int trickScoreValue=0;
+		if(win){
+			trickScoreValue = 10;
+			if(self && card.getSuitName()!=state.getHokm()){
+				trickScoreValue += 10;
+			}
+		}else{
+			trickScoreValue = -10;
+			if (trick2 > 4) {
+				trickScoreValue -= 10;
+			} else if (trick2 == 4 && trick1 < 2) {
+				trickScoreValue -= 10;
+			} else if (trick2 == 3 && trick1 < 1) {
+				trickScoreValue -= 10;
+			}
+		}
+		
 		return trickScoreValue;
 	}
 
@@ -81,7 +106,11 @@ public class AI {
 			if (card.getSuit() == state.getHokm().getSuit()) {
 				h = true;
 				hasSuits[card.getSuit()] = true;
-				inHandValue += cardValues[cardValue.getValue(card)] * 2;
+				if(cardValue.getValue(card)>9){
+					inHandValue += cardValues[cardValue.getValue(card)] * 4;
+				}else{
+					inHandValue += cardValues[cardValue.getValue(card)] * 2;
+				}
 			} else {
 				hasSuits[card.getSuit()] = true;
 				inHandValue += cardValues[cardValue.getValue(card)];
@@ -90,7 +119,7 @@ public class AI {
 		if (h) {
 			for (boolean b : hasSuits) {
 				if (!b) {
-					inHandValue += 6;
+					inHandValue += 10;
 				}
 			}
 		}
@@ -141,6 +170,7 @@ public class AI {
 		double maxReward = 0.0;
 		double actionReward;
 		int horizon=2;
+		myInd = players.indexOf(player);
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
 
 		for (Card card : legalActions) {
@@ -162,7 +192,8 @@ public class AI {
 //		System.out.println("getActionRewards - ran");
 		State newState = new State(oldState);
 		newState.getInHand().remove(myCard);
-		int myInd=players.indexOf(me);
+		//int myInd=players.indexOf(me);
+		
 		double actionReward = 0.0;
 		track.clear();
 		switch (oldState.getOnTable().size()) {
