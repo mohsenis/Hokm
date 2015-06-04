@@ -6,6 +6,7 @@ import gameplay.Deck;
 import gameplay.State;
 import gameplay.SuitName;
 import gameplay.Game;
+import gameplay.ValueName;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import controller.AgentPlayer;
 import controller.Player;
 
 public class AI {
@@ -24,7 +26,8 @@ public class AI {
 
 	}
 
-	static int myInd=0;
+	static Card myCard=new Card(SuitName.Clubs, ValueName.Two);
+	static Player staticPlayer= new AgentPlayer("",0);	
 	
 	private final static double[] realValues = { 3.00, 3.00, 3.00, 3.00, 3.00,
 			3.00, 3.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00 };
@@ -53,14 +56,14 @@ public class AI {
 		return coEf;
 	}
 
-	public static int getStateValue(State state, CardValue cardValue, boolean win, boolean self, Card card) {
+	public static int getStateValue(State state, CardValue cardValue, /*boolean win, boolean self,*/ Card card) {
 		int stateValue = 0;
 		stateValue = getInHandValue(state, cardValue)
-				+ getTrickScoreValue(state, win, self, card);
+				+ getTrickScoreValue(state, /*win, self,*/ card);
 		return stateValue;
 	}
 
-	private static int getTrickScoreValue(State state) {
+	/*private static int getTrickScoreValue(State state) {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
 		int trickScoreValue = trick1 * 20;
@@ -72,19 +75,19 @@ public class AI {
 			trickScoreValue -= (trick2 - trick1) * 10;
 		}
 		return trickScoreValue;
-	}
+	}*/
 	
-	private static int getTrickScoreValue(State state, boolean win, boolean self, Card card) {
+	private static int getTrickScoreValue(State state, /*boolean win, boolean self,*/ Card card) {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
-		int trickScoreValue=0;
-		if(win){
-			trickScoreValue = 10;
+		int trickScoreValue=(trick1-trick2)*20;
+		/*if(win){
+			trickScoreValue = 20;
 			if(self && card.getSuitName()!=state.getHokm()){
 				trickScoreValue += 10;
 			}
 		}else{
-			trickScoreValue = -10;
+			trickScoreValue = -20;
 			if (trick2 > 4) {
 				trickScoreValue -= 10;
 			} else if (trick2 == 4 && trick1 < 2) {
@@ -92,7 +95,7 @@ public class AI {
 			} else if (trick2 == 3 && trick1 < 1) {
 				trickScoreValue -= 10;
 			}
-		}
+		}*/
 		
 		return trickScoreValue;
 	}
@@ -109,7 +112,7 @@ public class AI {
 				if(cardValue.getValue(card)>9){
 					inHandValue += cardValues[cardValue.getValue(card)] * 4;
 				}else{
-					inHandValue += cardValues[cardValue.getValue(card)] * 2;
+					inHandValue += cardValues[cardValue.getValue(card)] * 3;
 				}
 			} else {
 				hasSuits[card.getSuit()] = true;
@@ -126,7 +129,6 @@ public class AI {
 		return inHandValue;
 	}
 
-	
 	private static boolean suitStatus(List<Card> played, List<Card> inHand,
 			SuitName suit) {
 
@@ -166,14 +168,16 @@ public class AI {
 
 	public static Card getAction(List<Card> legalActions, State state,
 			List<Player> players, Player player, CardValue cardValue) {
+		staticPlayer = player;
 		Card bestAction = legalActions.get(0);
 		double maxReward = 0.0;
 		double actionReward;
 		int horizon=2;
-		myInd = players.indexOf(player);
+		
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
 
 		for (Card card : legalActions) {
+			myCard = card;
 			actionReward = getActionReward(card, state, players, cardValue,
 					player, horizon);
 			System.out.printf("%-5s" + "%-22s" + "%-18s" + "\t" + track.toString() + "\n",
@@ -188,7 +192,7 @@ public class AI {
 	}
 
 	public static double getActionReward(Card myCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player me, int horizon) {
+			List<Player> players, CardValue oldCardValue, Player staticPlayer, int horizon) {
 //		System.out.println("getActionRewards - ran");
 		State newState = new State(oldState);
 		newState.getInHand().remove(myCard);
@@ -198,19 +202,19 @@ public class AI {
 		track.clear();
 		switch (oldState.getOnTable().size()) {
 		case 0:
-			actionReward=LookTree.case0(myInd, myCard, newState, players, oldCardValue, me, horizon);
+			actionReward=LookTree.case0(myCard, newState, players, oldCardValue, staticPlayer, horizon);
 			break;
 			
 		case 1:
-			actionReward=LookTree.case1(myInd, myCard, newState, players, oldCardValue, me, horizon);
+			actionReward=LookTree.case1(myCard, newState, players, oldCardValue, staticPlayer, horizon);
 			break;
 			
 		case 2:
-			actionReward=LookTree.case2(myInd, myCard, newState, players, oldCardValue, me, horizon);
+			actionReward=LookTree.case2(myCard, newState, players, oldCardValue, staticPlayer, horizon);
 			break;
 			
 		case 3:
-			actionReward=LookTree.case3(myInd, myCard, newState, players, oldCardValue, me, horizon);
+			actionReward=LookTree.case3(myCard, newState, players, oldCardValue, staticPlayer, horizon);
 			break;
 		}
 
