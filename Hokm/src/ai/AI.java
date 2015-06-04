@@ -140,11 +140,12 @@ public class AI {
 		Card bestAction = legalActions.get(0);
 		double maxReward = 0.0;
 		double actionReward;
+		int horizon=2;
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
 
 		for (Card card : legalActions) {
 			actionReward = getActionReward(card, state, players, cardValue,
-					player);
+					player, horizon);
 			System.out.printf("%-5s" + "%-22s" + "%-18s" + "\t" + track.toString() + "\n",
 					(legalActions.indexOf(card) + 1) + ") ", card.toString(),actionReward);
 
@@ -157,7 +158,7 @@ public class AI {
 	}
 
 	public static double getActionReward(Card myCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player me) {
+			List<Player> players, CardValue oldCardValue, Player me, int horizon) {
 //		System.out.println("getActionRewards - ran");
 		State newState = new State(oldState);
 		newState.getInHand().remove(myCard);
@@ -166,19 +167,19 @@ public class AI {
 		track.clear();
 		switch (oldState.getOnTable().size()) {
 		case 0:
-			actionReward=LookTree.case0(myInd, myCard, newState, players, oldCardValue, me);
+			actionReward=LookTree.case0(myInd, myCard, newState, players, oldCardValue, me, horizon);
 			break;
 			
 		case 1:
-			actionReward=LookTree.case1(myInd, myCard, newState, players, oldCardValue, me);
+			actionReward=LookTree.case1(myInd, myCard, newState, players, oldCardValue, me, horizon);
 			break;
 			
 		case 2:
-			actionReward=LookTree.case2(myInd, myCard, newState, players, oldCardValue, me);
+			actionReward=LookTree.case2(myInd, myCard, newState, players, oldCardValue, me, horizon);
 			break;
 			
 		case 3:
-			actionReward=LookTree.case3(myInd, myCard, newState, players, oldCardValue, me);
+			actionReward=LookTree.case3(myInd, myCard, newState, players, oldCardValue, me, horizon);
 			break;
 		}
 

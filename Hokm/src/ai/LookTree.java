@@ -12,7 +12,6 @@ import gameplay.SuitName;
 import gameplay.ValueName;
 
 public class LookTree {
-	private static int horizon = 5;
 
 	private LookTree() {
 	}
@@ -46,7 +45,7 @@ public class LookTree {
 	}
 */
 	public static double case0(int myInd, Card oCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player oPlayer) {
+			List<Player> players, CardValue oldCardValue, Player oPlayer, int horizon) {
 		double actionReward = 0;
 		double r1, r2, r3, r4;
 		Card c1, c2, c3, c4;
@@ -61,29 +60,29 @@ public class LookTree {
 			AI.track.add(1);
 			pr1 = newState.getCardDist().prGreater(oCard, op1);
 			c1 = newState.getCardDist().smallestGreater(oCard);
-			r1 = case1(myInd, c1, newState, players, cv, op1);
+			r1 = case1(myInd, c1, newState, players, cv, op1, horizon);
 			pr2 = newState.getCardDist().prLess(oCard, op1);
 			c2 = newState.getCardDist().smallestLess(oCard);
-			r2 = case1(myInd, c2, newState, players, cv, op1);
+			r2 = case1(myInd, c2, newState, players, cv, op1, horizon);
 			c3 = newState.getCardDist().smallestSuits(
 					AI.getOtherSuits(new SuitName[] { hokm }), op1);
-			r3 = case1(myInd, c3, newState, players, cv, op1);
+			r3 = case1(myInd, c3, newState, players, cv, op1, horizon);
 
 			actionReward = pr1 * r1 + (1 - pr1) * ((pr2 * r2) + (1 - pr2) * r3);
 		} else {
 			AI.track.add(2);
 			pr1 = newState.getCardDist().prGreater(oCard, op1);
 			c1 = newState.getCardDist().smallestGreater(oCard);
-			r1 = case1(myInd, c1, newState, players, cv, op1);
+			r1 = case1(myInd, c1, newState, players, cv, op1, horizon);
 			pr2 = newState.getCardDist().prLess(oCard, op1);
 			c2 = newState.getCardDist().smallestLess(oCard);
-			r2 = case1(myInd, c2, newState, players, cv, op1);
+			r2 = case1(myInd, c2, newState, players, cv, op1, horizon);
 			pr3 = newState.getCardDist().prSuit(hokm, op1);
 			c3 = newState.getCardDist().smallestSuit(hokm);
-			r3 = case1(myInd, c3, newState, players, cv, op1);
+			r3 = case1(myInd, c3, newState, players, cv, op1, horizon);
 			c4 = newState.getCardDist().smallestSuits(
 					AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op1);
-			r4 = case1(myInd, c4, newState, players, cv, op1);
+			r4 = case1(myInd, c4, newState, players, cv, op1, horizon);
 
 			actionReward = pr1 * r1 + (1 - pr1)
 					* (pr2 * r2 + (1 - pr2) * (pr3 * r3 + (1 - pr3) * r4));
@@ -93,7 +92,7 @@ public class LookTree {
 	}
 
 	public static double case1(int myInd, Card oCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player oPlayer) {
+			List<Player> players, CardValue oldCardValue, Player oPlayer, int horizon) {
 		double actionReward = 0;
 		double r1, r2, r3, r4;
 		Card c1, c2, c3, c4;
@@ -116,13 +115,13 @@ public class LookTree {
 					AI.track.add(3);
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
 					c1 = newState.getCardDist().smallestGreater(betterCard);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
 					c2 = newState.getCardDist().smallestLess(betterCard);
-					r2 = case2(myInd, c2, newState, players, cv, op2);
+					r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 					c3 = newState.getCardDist().smallestSuits(
 							AI.getOtherSuits(new SuitName[] { hokm }), op2);
-					r3 = case2(myInd, c3, newState, players, cv, op2);
+					r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 
 					actionReward = pr1 * r1 + (1 - pr1)
 							* ((pr2 * r2) + (1 - pr2) * r3);
@@ -130,10 +129,10 @@ public class LookTree {
 					AI.track.add(4);
 					pr1 = newState.getCardDist().prSuit(hokm, op2);
 					c1 = newState.getCardDist().smallestSuit(hokm);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					c2 = newState.getCardDist().smallestSuits(
 							AI.getOtherSuits(new SuitName[] { hokm }), op2);
-					r2 = case2(myInd, c1, newState, players, cv, op2);
+					r2 = case2(myInd, c1, newState, players, cv, op2, horizon);
 
 					actionReward = (pr1 * r1 + (1 - pr1) * r2);
 				}
@@ -142,18 +141,18 @@ public class LookTree {
 					AI.track.add(5);
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
 					c1 = newState.getCardDist().smallestGreater(betterCard);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
 					c2 = newState.getCardDist().smallestLess(betterCard);
-					r2 = case2(myInd, c2, newState, players, cv, op2);
+					r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
 					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case2(myInd, c3, newState, players, cv, op2);
+					r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 					c4 = newState.getCardDist()
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r4 = case2(myInd, c4, newState, players, cv, op2);
+					r4 = case2(myInd, c4, newState, players, cv, op2, horizon);
 
 					actionReward = pr1
 							* r1
@@ -164,7 +163,7 @@ public class LookTree {
 					AI.track.add(6);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist()
 							.prSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
@@ -173,9 +172,9 @@ public class LookTree {
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r2 = case2(myInd, c2, newState, players, cv, op2);
+					r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case2(myInd, c3, newState, players, cv, op2);
+					r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 
 					actionReward = pr1 * r1 + (1 - pr1)
 							* ((pr2 * r2) + (1 - pr2) * r3);
@@ -186,13 +185,13 @@ public class LookTree {
 				AI.track.add(7);
 				pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
 				c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
-				r1 = case2(myInd, c1, newState, players, cv, op2);
+				r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
 				c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-				r2 = case2(myInd, c2, newState, players, cv, op2);
+				r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 				c3 = newState.getCardDist().smallestSuits(
 						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r3 = case2(myInd, c3, newState, players, cv, op2);
+				r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 
 				actionReward = pr1 * r1 + (1 - pr1)
 						* ((pr2 * r2) + (1 - pr2) * r3);
@@ -203,18 +202,18 @@ public class LookTree {
 							.prGreater(bestCardOnTable, op2);
 					c1 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
 					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-					r2 = case2(myInd, c2, newState, players, cv, op2);
+					r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
 					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case2(myInd, c3, newState, players, cv, op2);
+					r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 					c4 = newState.getCardDist()
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r4 = case2(myInd, c4, newState, players, cv, op2);
+					r4 = case2(myInd, c4, newState, players, cv, op2, horizon);
 
 					actionReward = pr1
 							* r1
@@ -225,12 +224,12 @@ public class LookTree {
 					AI.track.add(9);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case2(myInd, c1, newState, players, cv, op2);
+					r1 = case2(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist()
 							.prGreater(bestCardOnTable, op2);
 					c2 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
-					r2 = case2(myInd, c2, newState, players, cv, op2);
+					r2 = case2(myInd, c2, newState, players, cv, op2, horizon);
 					pr3 = newState.getCardDist()
 							.prSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
@@ -239,9 +238,9 @@ public class LookTree {
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r3 = case2(myInd, c3, newState, players, cv, op2);
+					r3 = case2(myInd, c3, newState, players, cv, op2, horizon);
 					c4 = newState.getCardDist().smallestSuit(hokm);
-					r4 = case2(myInd, c4, newState, players, cv, op2);
+					r4 = case2(myInd, c4, newState, players, cv, op2, horizon);
 
 					actionReward = pr1
 							* r1
@@ -257,7 +256,7 @@ public class LookTree {
 	}
 
 	public static double case2(int myInd, Card oCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player oPlayer) {
+			List<Player> players, CardValue oldCardValue, Player oPlayer, int horizon) {
 
 		double r1, r2, r3, r4;
 		Card c1, c2, c3, c4;
@@ -282,10 +281,10 @@ public class LookTree {
 				AI.track.add(10);
 				pr1 = newState.getCardDist().prSuit(hokm, op2);
 				c1 = newState.getCardDist().smallestSuit(hokm);
-				r1 = case3(myInd, c1, newState, players, cv, op2);
+				r1 = case3(myInd, c1, newState, players, cv, op2, horizon);
 				c2 = newState.getCardDist().smallestSuits(
 						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r2 = case3(myInd, c2, newState, players, cv, op2);
+				r2 = case3(myInd, c2, newState, players, cv, op2,horizon);
 
 				actionReward = (pr1 * r1 + (1 - pr1) * r2);
 
@@ -293,16 +292,16 @@ public class LookTree {
 				AI.track.add(11);
 				pr1 = newState.getCardDist().prSuit(firstSuit, op2);
 				c1 = newState.getCardDist().smallestSuit(firstSuit);
-				r1 = case3(myInd, c1, newState, players, cv, op2);
+				r1 = case3(myInd, c1, newState, players, cv, op2, horizon);
 				pr2 = newState.getCardDist().prSuits(
 						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
 						op2);
 				c2 = newState.getCardDist().smallestSuits(
 						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
 						op2);
-				r2 = case3(myInd, c2, newState, players, cv, op2);
+				r2 = case3(myInd, c2, newState, players, cv, op2, horizon);
 				c3 = newState.getCardDist().smallestSuit(hokm);
-				r3 = case3(myInd, c3, newState, players, cv, op2);
+				r3 = case3(myInd, c3, newState, players, cv, op2, horizon);
 
 				actionReward = pr1 * r1 + (1 - pr1)
 						* ((pr2 * r2) + (1 - pr2) * r3);
@@ -312,13 +311,13 @@ public class LookTree {
 				AI.track.add(12);
 				pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
 				c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
-				r1 = case3(myInd, c1, newState, players, cv, op2);
+				r1 = case3(myInd, c1, newState, players, cv, op2, horizon);
 				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
 				c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-				r2 = case3(myInd, c2, newState, players, cv, op2);
+				r2 = case3(myInd, c2, newState, players, cv, op2, horizon);
 				c3 = newState.getCardDist().smallestSuits(
 						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r3 = case3(myInd, c3, newState, players, cv, op2);
+				r3 = case3(myInd, c3, newState, players, cv, op2, horizon);
 
 				actionReward = pr1 * r1 + (1 - pr1)
 						* ((pr2 * r2) + (1 - pr2) * r3);
@@ -329,18 +328,18 @@ public class LookTree {
 							.prGreater(bestCardOnTable, op2);
 					c1 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
-					r1 = case3(myInd, c1, newState, players, cv, op2);
+					r1 = case3(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
 					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-					r2 = case3(myInd, c2, newState, players, cv, op2);
+					r2 = case3(myInd, c2, newState, players, cv, op2, horizon);
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
 					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case3(myInd, c3, newState, players, cv, op2);
+					r3 = case3(myInd, c3, newState, players, cv, op2, horizon);
 					c4 = newState.getCardDist()
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r4 = case3(myInd, c4, newState, players, cv, op2);
+					r4 = case3(myInd, c4, newState, players, cv, op2, horizon);
 
 					actionReward = pr1
 							* r1
@@ -351,12 +350,12 @@ public class LookTree {
 					AI.track.add(14);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
 					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case3(myInd, c1, newState, players, cv, op2);
+					r1 = case3(myInd, c1, newState, players, cv, op2, horizon);
 					pr2 = newState.getCardDist()
 							.prGreater(bestCardOnTable, op2);
 					c2 = newState.getCardDist()
 							.smallestGreater(bestCardOnTable);
-					r2 = case3(myInd, c2, newState, players, cv, op2);
+					r2 = case3(myInd, c2, newState, players, cv, op2, horizon);
 					pr3 = newState.getCardDist()
 							.prSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
@@ -365,9 +364,9 @@ public class LookTree {
 							.smallestSuits(
 									AI.getOtherSuits(new SuitName[] { hokm,
 											firstSuit }), op2);
-					r3 = case3(myInd, c3, newState, players, cv, op2);
+					r3 = case3(myInd, c3, newState, players, cv, op2, horizon);
 					c4 = newState.getCardDist().smallestSuit(hokm);
-					r4 = case3(myInd, c4, newState, players, cv, op2);
+					r4 = case3(myInd, c4, newState, players, cv, op2, horizon);
 
 					actionReward = pr1
 							* r1
@@ -381,8 +380,9 @@ public class LookTree {
 	}
 
 	public static double case3(int myInd, Card oCard, State oldState,
-			List<Player> players, CardValue oldCardValue, Player oPlayer) {
-
+			List<Player> players, CardValue oldCardValue, Player oPlayer, int horizon) {
+		AI.track.add(15);
+		
 		CardValue cv = new CardValue(oldCardValue);
 		SuitName hokm = oldState.getHokm();
 
@@ -407,10 +407,11 @@ public class LookTree {
 		newState.getOnTable().clear();
 		
 		while (horizon > 0) {
+//			System.out.println(horizon);
 			horizon--;
 			for (Card card : possibleMoves) {
 				actionReward += AI.getActionReward(card, newState, players, cv,
-						players.get(0));
+						players.get(0), horizon);
 			}
 		}
 		actionReward = AI.getStateValue(newState, cv);
