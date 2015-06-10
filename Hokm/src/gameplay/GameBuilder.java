@@ -32,7 +32,7 @@ public class GameBuilder {
 	public void teamBuilder(List<Player> players){
 		Team team;
 		long seed = System.nanoTime();
-		Collections.shuffle(players, new Random(seed));
+		//Collections.shuffle(players, new Random(seed));
 		
 		//setHakem(players.get(0));
 		
@@ -42,6 +42,7 @@ public class GameBuilder {
 		team = new Team(players.get(1), players.get(3));
 		players.get(1).setTeam(team);
 		players.get(3).setTeam(team);
+		
 	}
 	
 	public static List<Player> reorder(List<Player> players, Player player){
@@ -59,8 +60,12 @@ public class GameBuilder {
 	
 	public String startGame(List<Player> players){
 		teamBuilder(players);
+		players = reorder(players, players.get(1));
 		Game game = new Game(players);	
-		
+		r = new int[2];
+		r[0]=0;
+		r[1]=0;
+		rs = new ArrayList<Integer[]>();
 		while(players.get(0).getTeam().getTotalScore()<7 && 
 				players.get(1).getTeam().getTotalScore()<7 && !game.getTerminate()){
 						
@@ -76,12 +81,29 @@ public class GameBuilder {
 			}
 			
 			System.out.println("Total score is "+players.get(0).getTeam().getTotalScore()+" to "+players.get(1).getTeam().getTotalScore());
-			for(Player player:players){
-				player.newDist();
+			
+			/*Scanner tmp=new Scanner(System.in);
+			tmp.nextLine();*/
+			
+			if(players.get(0).getIndex()==0||players.get(0).getIndex()==2){
+				r[0]=players.get(0).getTeam().getTotalScore();
+				r[1]=players.get(1).getTeam().getTotalScore();
+				rs.add(new Integer[]{players.get(0).getTeam().getTrickScore(), players.get(1).getTeam().getTrickScore()});
+			}else{
+				r[1]=players.get(0).getTeam().getTotalScore();
+				r[0]=players.get(1).getTeam().getTotalScore();
+				rs.add(new Integer[]{players.get(1).getTeam().getTrickScore(), players.get(0).getTeam().getTrickScore()});
 			}
+			
+			
 			game = new Game(players);
+			
+			
 		}
 		
 		return "Winner is "+players.get(0).getName()+" and "+players.get(2).getName();
 	}
+	
+	public static int[] r;
+	public static List<Integer[]> rs;
 }

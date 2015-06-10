@@ -1,5 +1,7 @@
 package ai;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math3.exception.ZeroException;
@@ -17,6 +19,9 @@ public class LookTree {
 
 	private LookTree() {
 	}
+	
+	private static double PRUNE = 0.1;
+	private static int[] VALUES = new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 6, 8, 10 };
 
 /*	public static double lookTree(int Card oCard, State oldState,
 			List<Player> players, CardValue oldCardValue, Player oPlayer) {
@@ -57,37 +62,114 @@ public class LookTree {
 		SuitName firstSuit = oCard.getSuitName();
 		State newState = AI.getNewState(oldState, oCard, oPlayer, players);
 		Player op1 = players.get(1);
-
+		
+		if(op1.getIndex()==AI.staticPlayer.getIndex()){
+			c1 = AI.getAction(AI.legalActions(newState), newState, players, AI.staticPlayer, cv, 0);
+			r1 = case1(c1, newState, players, cv, op1, horizon);
+			return r1;
+		}
+		
 		if (firstSuit == hokm) {
 			AI.track.add(1);
+			
 			pr1 = newState.getCardDist().prGreater(oCard, op1);
-			c1 = newState.getCardDist().smallestGreater(oCard);
-			r1 = case1(c1, newState, players, cv, op1, horizon);
+			AI.prs.add(pr1);
+			if(pr1<PRUNE){
+				r1=0;
+			}else{
+				c1 = newState.getCardDist().smallestGreater(oCard);
+				r1 = case1(c1, newState, players, cv, op1, horizon);
+			}
+			
 			pr2 = newState.getCardDist().prLess(oCard, op1);
-			c2 = newState.getCardDist().smallestLess(oCard);
-			r2 = case1(c2, newState, players, cv, op1, horizon);
-			c3 = newState.getCardDist().smallestSuits(
-					AI.getOtherSuits(new SuitName[] { hokm }), op1);
-			r3 = case1(c3, newState, players, cv, op1, horizon);
+			AI.prs.add((1-pr1)*pr2);
+			if((1-pr1)*pr2<PRUNE){
+				r2=0;
+			}else{
+				c2 = newState.getCardDist().smallestLess(oCard);
+				r2 = case1(c2, newState, players, cv, op1, horizon);
+			}
+			
+			AI.prs.add((1-pr1)*(1-pr2));
+			if((1-pr1)*(1-pr2)<PRUNE){
+				r3=0;
+			}else{
+				c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op1);
+				r3 = case1(c3, newState, players, cv, op1, horizon);
+			}
+			
 
 			actionReward = pr1 * r1 + (1 - pr1) * ((pr2 * r2) + (1 - pr2) * r3);
 		} else {
-			AI.track.add(2);
-			pr1 = newState.getCardDist().prGreater(oCard, op1);
-			c1 = newState.getCardDist().smallestGreater(oCard);
-			r1 = case1(c1, newState, players, cv, op1, horizon);
-			pr2 = newState.getCardDist().prLess(oCard, op1);
-			c2 = newState.getCardDist().smallestLess(oCard);
-			r2 = case1(c2, newState, players, cv, op1, horizon);
-			pr3 = newState.getCardDist().prSuit(hokm, op1);
-			c3 = newState.getCardDist().smallestSuit(hokm);
-			r3 = case1(c3, newState, players, cv, op1, horizon);
-			c4 = newState.getCardDist().smallestSuits(
-					AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op1);
-			r4 = case1(c4, newState, players, cv, op1, horizon);
+			
+			if(cv.getValue(oCard)==12){
+				AI.track.add(21);
+				pr1 = newState.getCardDist().prSuit(firstSuit, op1);
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().smallestSuit(firstSuit);
+					r1 = case1(c1, newState, players, cv, op1, horizon);
+				}
+				
+				pr3 = newState.getCardDist().prSuit(hokm, op1);
+				AI.prs.add((1-pr1)*pr3);
+				if((1-pr1)*pr3<PRUNE){
+					r3=0;
+				}else{
+					c3 = newState.getCardDist().smallestSuit(hokm);
+					r3 = case1(c3, newState, players, cv, op1, horizon);
+				}
+				
+				AI.prs.add((1-pr1)*(1-pr3));
+				if((1-pr1)*(1-pr3)<PRUNE){
+					r4=0;
+				}else{
+					c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op1);
+					r4 = case1(c4, newState, players, cv, op1, horizon);
+				}
+				
+				actionReward = pr1 * r1 + (1 - pr1) * ((pr3 * r3) + (1 - pr3) * r4);
+			}else{
+				AI.track.add(22);
+				pr1 = newState.getCardDist().pHighestCard(firstSuit, op1);
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().highestCard(firstSuit);
+					r1 = case1(c1, newState, players, cv, op1, horizon);
+				}
+				
+				pr2 = newState.getCardDist().prSuit(firstSuit, op1);
+				AI.prs.add((1-pr1)*pr2);
+				if((1-pr1)*pr2<PRUNE){
+					r2=0;
+				}else{
+					c2 = newState.getCardDist().smallestSuit(firstSuit);
+					r2 = case1(c2, newState, players, cv, op1, horizon);
+				}
+				
+				pr3 = newState.getCardDist().prSuit(hokm, op1);
+				AI.prs.add((1-pr1)*(1-pr2)*pr3);
+				if((1-pr1)*(1-pr2)*pr3<PRUNE){
+					r3=0;
+				}else{
+					c3 = newState.getCardDist().smallestSuit(hokm);
+					r3 = case1(c3, newState, players, cv, op1, horizon);
+				}
+				
+				AI.prs.add((1-pr1)*(1-pr2)*(1-pr3));
+				if((1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+					r4=0;
+				}else{
+					c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op1);
+					r4 = case1(c4, newState, players, cv, op1, horizon);
+				}
 
-			actionReward = pr1 * r1 + (1 - pr1)
-					* (pr2 * r2 + (1 - pr2) * (pr3 * r3 + (1 - pr3) * r4));
+				actionReward = pr1 * r1 + (1 - pr1) * (pr2 * r2 + (1 - pr2) * (pr3 * r3 + (1 - pr3) * r4));
+			}
 		}
 
 		return actionReward;
@@ -96,159 +178,296 @@ public class LookTree {
 	public static double case1(Card oCard, State oldState,
 			List<Player> players, CardValue oldCardValue, Player oPlayer, int horizon) {
 		double actionReward = 0;
-		double r1, r2, r3, r4;
-		Card c1, c2, c3, c4;
-		double pr1, pr2, pr3;
+		double r0, r1, r2, r3, r4;
+		Card c0, c1, c2, c3, c4;
+		double pr0, pr1, pr2, pr3;
 		CardValue cv = new CardValue(oldCardValue);
 		SuitName hokm = oldState.getHokm();
 		SuitName firstSuit = oldState.getOnTable().get(0).getSuitName();
 		State newState = AI.getNewState(oldState, oCard, oPlayer, players);
 		Player op1 = players.get(0);
 		Player op2 = players.get(2);
+		if(op2.getIndex()==AI.staticPlayer.getIndex()){
+			c1 = AI.getAction(AI.legalActions(newState), newState, players, AI.staticPlayer, cv, 0);
+			r1 = case2(c1, newState, players, cv, op2, horizon);
+			return r1;
+		}
 		Player winner = Game.detWinner(players, newState.getOnTable(), hokm);
 		Card bestCardOnTable = newState.getOnTable().get(
 				players.indexOf(winner));
 
 		if (winner == op1) {
-			Card betterCard = new Card(hokm,
+			Card betterCard = new Card(bestCardOnTable.getSuitName(),
 					ValueName.getValueName(bestCardOnTable.getValue() + 3));
 			if (firstSuit == hokm) {
 				if (cv.getValue(bestCardOnTable) <= 9) {
 					AI.track.add(3);
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
-					c1 = newState.getCardDist().smallestGreater(betterCard);
-					r1 = case2(c1, newState, players, cv, op2, horizon);
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestGreater(betterCard);
+						r1 = case2(c1, newState, players, cv, op2, horizon);
+					}
+					
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
-					c2 = newState.getCardDist().smallestLess(betterCard);
-					r2 = case2(c2, newState, players, cv, op2, horizon);
-					c3 = newState.getCardDist().smallestSuits(
-							AI.getOtherSuits(new SuitName[] { hokm }), op2);
-					r3 = case2(c3, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr1)*pr2);
+					if((1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestLess(betterCard);
+						r2 = case2(c2, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1)*(1-pr2));
+					if((1-pr1)*(1-pr2)<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op2);
+						r3 = case2(c3, newState, players, cv, op2, horizon);
+					}
 
-					actionReward = pr1 * r1 + (1 - pr1)
-							* ((pr2 * r2) + (1 - pr2) * r3);
+					actionReward = pr1 * r1 + (1 - pr1) * ((pr2 * r2) + (1 - pr2) * r3);
 				} else {
 					AI.track.add(4);
 					pr1 = newState.getCardDist().prSuit(hokm, op2);
-					c1 = newState.getCardDist().smallestSuit(hokm);
-					r1 = case2(c1, newState, players, cv, op2, horizon);
-					c2 = newState.getCardDist().smallestSuits(
-							AI.getOtherSuits(new SuitName[] { hokm }), op2);
-					r2 = case2(c1, newState, players, cv, op2, horizon);
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestSuit(hokm);
+						r1 = case2(c1, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1));
+					if((1-pr1)<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op2);
+						r2 = case2(c2, newState, players, cv, op2, horizon);
+					}
 
 					actionReward = (pr1 * r1 + (1 - pr1) * r2);
 				}
 			} else {
 				if (cv.getValue(bestCardOnTable) <= 9) {
 					AI.track.add(5);
+					pr0 = newState.getCardDist().pHighestCard(firstSuit, op2);
+					AI.prs.add(pr0);
+					if(pr0<PRUNE){
+						r0=0;
+					}else{
+						c0 = newState.getCardDist().highestCard(firstSuit);
+						r0 = case2(c0, newState, players, cv, op2, horizon);
+					}
+					
 					pr1 = newState.getCardDist().prGreater(betterCard, op2);
-					c1 = newState.getCardDist().smallestGreater(betterCard);
-					r1 = case2(c1, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr0)*pr1);
+					if((1-pr0)*pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestGreater(betterCard);
+						r1 = case2(c1, newState, players, cv, op2, horizon);
+					}
+					
 					pr2 = newState.getCardDist().prLess(betterCard, op2);
-					c2 = newState.getCardDist().smallestLess(betterCard);
-					r2 = case2(c2, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr0)*(1-pr1)*pr2);
+					if((1-pr0)*(1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestLess(betterCard);
+						r2 = case2(c2, newState, players, cv, op2, horizon);
+					}
+					
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
-					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case2(c3, newState, players, cv, op2, horizon);
-					c4 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r4 = case2(c4, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr0)*(1-pr1)*(1-pr2)*pr3);
+					if((1-pr0)*(1-pr1)*(1-pr2)*pr3<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuit(hokm);
+						r3 = case2(c3, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr0)*(1-pr1)*(1-pr2)*(1-pr3));
+					if((1-pr0)*(1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+						r4=0;
+					}else{
+						c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+						r4 = case2(c4, newState, players, cv, op2, horizon);
+					}
 
-					actionReward = pr1
-							* r1
-							+ (1 - pr1)
-							* (pr2 * r2 + (1 - pr2)
-									* (pr3 * r3 + (1 - pr3) * r4));
+					actionReward = pr0*r0 + (1-pr0)*(pr1* r1+ (1 - pr1)	* (pr2 * r2 + (1 - pr2)	* (pr3 * r3 + (1 - pr3) * r4)));
 				} else {
 					AI.track.add(6);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
-					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case2(c1, newState, players, cv, op2, horizon);
-					pr2 = newState.getCardDist()
-							.prSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					c2 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r2 = case2(c2, newState, players, cv, op2, horizon);
-					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case2(c3, newState, players, cv, op2, horizon);
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestSuit(firstSuit);
+						r1 = case2(c1, newState, players, cv, op2, horizon);
+					}
+					
+					pr2 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+					AI.prs.add((1-pr1)*pr2);
+					if((1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+						r2 = case2(c2, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1)*(1-pr2));
+					if((1-pr1)*(1-pr2)<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuit(hokm);
+						r3 = case2(c3, newState, players, cv, op2, horizon);
+					}
 
-					actionReward = pr1 * r1 + (1 - pr1)
-							* ((pr2 * r2) + (1 - pr2) * r3);
+					actionReward = pr1 * r1 + (1 - pr1)	* ((pr2 * r2) + (1 - pr2) * r3);
 				}
 			}
 		} else {
 			if (firstSuit == hokm) {
 				AI.track.add(7);
 				pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
-				c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
-				r1 = case2(c1, newState, players, cv, op2, horizon);
-				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
-				c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-				r2 = case2(c2, newState, players, cv, op2, horizon);
-				c3 = newState.getCardDist().smallestSuits(
-						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r3 = case2(c3, newState, players, cv, op2, horizon);
-
-				actionReward = pr1 * r1 + (1 - pr1)
-						* ((pr2 * r2) + (1 - pr2) * r3);
-			} else {
-				if (bestCardOnTable.getSuitName() == firstSuit) {
-					AI.track.add(8);
-					pr1 = newState.getCardDist()
-							.prGreater(bestCardOnTable, op2);
-					c1 = newState.getCardDist()
-							.smallestGreater(bestCardOnTable);
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
 					r1 = case2(c1, newState, players, cv, op2, horizon);
-					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
+				}
+				
+				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
+				AI.prs.add((1-pr1)*pr2);
+				if((1-pr1)*pr2<PRUNE){
+					r2=0;
+				}else{
 					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
 					r2 = case2(c2, newState, players, cv, op2, horizon);
-					pr3 = newState.getCardDist().prSuit(hokm, op2);
-					c3 = newState.getCardDist().smallestSuit(hokm);
+				}
+				
+				AI.prs.add((1-pr1)*(1-pr2));
+				if((1-pr1)*(1-pr2)<PRUNE){
+					r3=0;
+				}else{
+					c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op2);
 					r3 = case2(c3, newState, players, cv, op2, horizon);
-					c4 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r4 = case2(c4, newState, players, cv, op2, horizon);
+				}
 
-					actionReward = pr1
-							* r1
-							+ (1 - pr1)
-							* (pr2 * r2 + (1 - pr2)
-									* (pr3 * r3 + (1 - pr3) * r4));
+				actionReward = pr1 * r1 + (1 - pr1)	* ((pr2 * r2) + (1 - pr2) * r3);
+			} else {
+				if (bestCardOnTable.getSuitName() == firstSuit) {
+					
+					if(cv.getValue(oCard)==12){
+						AI.track.add(81);
+						pr1 = newState.getCardDist().prSuit(firstSuit, op2);
+						AI.prs.add(pr1);
+						if(pr1<PRUNE){
+							r1=0;
+						}else{
+							c1 = newState.getCardDist().smallestSuit(firstSuit);
+							r1 = case2(c1, newState, players, cv, op2, horizon);
+						}
+						
+						pr3 = newState.getCardDist().prSuit(hokm, op2);
+						AI.prs.add((1-pr1)*pr3);
+						if((1-pr1)*pr3<PRUNE){
+							r3=0;
+						}else{
+							c3 = newState.getCardDist().smallestSuit(hokm);
+							r3 = case2(c3, newState, players, cv, op2, horizon);
+						}
+						
+						AI.prs.add((1-pr1)*(1-pr3));
+						if((1-pr1)*(1-pr3)<PRUNE){
+							r4=0;
+						}else{
+							c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op2);
+							r4 = case2(c4, newState, players, cv, op2, horizon);
+						}
+
+						actionReward = pr1 * r1 + (1 - pr1) * ((pr3 * r3) + (1 - pr3) * r4);
+					}else{
+						AI.track.add(82);
+						pr1 = newState.getCardDist().pHighestCard(firstSuit, op2);
+						AI.prs.add(pr1);
+						if(pr1<PRUNE){
+							r1=0;
+						}else{
+							c1 = newState.getCardDist().highestCard(firstSuit);
+							r1 = case2(c1, newState, players, cv, op2, horizon);
+						}
+						
+						pr2 = newState.getCardDist().prSuit(firstSuit, op2);
+						AI.prs.add((1-pr1)*pr2);
+						if((1-pr1)*pr2<PRUNE){
+							r2=0;
+						}else{
+							c2 = newState.getCardDist().smallestSuit(firstSuit);
+							r2 = case2(c2, newState, players, cv, op2, horizon);
+						}
+						
+						pr3 = newState.getCardDist().prSuit(hokm, op2);
+						AI.prs.add((1-pr1)*(1-pr2)*pr3);
+						if((1-pr1)*(1-pr2)*pr3<PRUNE){
+							r3=0;
+						}else{
+							c3 = newState.getCardDist().smallestSuit(hokm);
+							r3 = case2(c3, newState, players, cv, op2, horizon);
+						}
+						
+						AI.prs.add((1-pr1)*(1-pr2)*(1-pr3));
+						if((1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+							r4=0;
+						}else{
+							c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }), op2);
+							r4 = case2(c4, newState, players, cv, op2, horizon);
+						}
+
+						actionReward = pr1 * r1 + (1 - pr1)	* (pr2 * r2 + (1 - pr2) * (pr3 * r3 + (1 - pr3) * r4));
+					}
 				} else {
 					AI.track.add(9);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
-					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case2(c1, newState, players, cv, op2, horizon);
-					pr2 = newState.getCardDist()
-							.prGreater(bestCardOnTable, op2);
-					c2 = newState.getCardDist()
-							.smallestGreater(bestCardOnTable);
-					r2 = case2(c2, newState, players, cv, op2, horizon);
-					pr3 = newState.getCardDist()
-							.prSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					c3 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r3 = case2(c3, newState, players, cv, op2, horizon);
-					c4 = newState.getCardDist().smallestSuit(hokm);
-					r4 = case2(c4, newState, players, cv, op2, horizon);
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestSuit(firstSuit);
+						r1 = case2(c1, newState, players, cv, op2, horizon);
+					}
+					
+					pr2 = newState.getCardDist().prGreater(bestCardOnTable, op2);
+					AI.prs.add((1-pr1)*pr2);
+					if((1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestGreater(bestCardOnTable);
+						r2 = case2(c2, newState, players, cv, op2, horizon);
+					}
+					
+					pr3 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+					AI.prs.add((1-pr1)*(1-pr2)*pr3);
+					if((1-pr1)*(1-pr2)*pr3<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+						r3 = case2(c3, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1)*(1-pr2)*(1-pr3));
+					if((1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+						r4=0;
+					}else{
+						c4 = newState.getCardDist().smallestSuit(hokm);
+						r4 = case2(c4, newState, players, cv, op2, horizon);
+					}
 
-					actionReward = pr1
-							* r1
-							+ (1 - pr1)
-							* (pr2 * r2 + (1 - pr2)
-									* (pr3 * r3 + (1 - pr3) * r4));
+					actionReward = pr1* r1+ (1 - pr1)* (pr2 * r2 + (1 - pr2)* (pr3 * r3 + (1 - pr3) * r4));
 				}
 
 			}
@@ -273,6 +492,12 @@ public class LookTree {
 
 		Player op1 = players.get(1);
 		Player op2 = players.get(3);
+		
+		if(op2.getIndex()==AI.staticPlayer.getIndex()){
+			c1 = AI.getAction(AI.legalActions(newState), newState, players, AI.staticPlayer, cv, 0);
+			r1 = case3(c1, newState, players, cv, op2, horizon);
+			return r1;
+		}
 
 		Player winner = Game.detWinner(players, newState.getOnTable(), hokm);
 		Card bestCardOnTable = newState.getOnTable().get(
@@ -282,99 +507,161 @@ public class LookTree {
 			if (firstSuit == hokm) {
 				AI.track.add(10);
 				pr1 = newState.getCardDist().prSuit(hokm, op2);
-				c1 = newState.getCardDist().smallestSuit(hokm);
-				r1 = case3(c1, newState, players, cv, op2, horizon);
-				c2 = newState.getCardDist().smallestSuits(
-						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r2 = case3(c2, newState, players, cv, op2,horizon);
-
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().smallestSuit(hokm);
+					r1 = case3(c1, newState, players, cv, op2, horizon);
+				}
+				
+				AI.prs.add(1-pr1);
+				if(1-pr1<PRUNE){
+					r2=0;
+				}else{
+					c2 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op2);
+					r2 = case3(c2, newState, players, cv, op2,horizon);
+				}
+				
 				actionReward = (pr1 * r1 + (1 - pr1) * r2);
 
 			} else {
 				AI.track.add(11);
 				pr1 = newState.getCardDist().prSuit(firstSuit, op2);
-				c1 = newState.getCardDist().smallestSuit(firstSuit);
-				r1 = case3(c1, newState, players, cv, op2, horizon);
-				pr2 = newState.getCardDist().prSuits(
-						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
-						op2);
-				c2 = newState.getCardDist().smallestSuits(
-						AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),
-						op2);
-				r2 = case3(c2, newState, players, cv, op2, horizon);
-				c3 = newState.getCardDist().smallestSuit(hokm);
-				r3 = case3(c3, newState, players, cv, op2, horizon);
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().smallestSuit(firstSuit);
+					r1 = case3(c1, newState, players, cv, op2, horizon);
+				}
+				
+				pr2 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),op2);
+				AI.prs.add((1-pr1)*pr2);
+				if((1-pr1)*pr2<PRUNE){
+					r2=0;
+				}else{
+					c2 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm, firstSuit }),	op2);
+					r2 = case3(c2, newState, players, cv, op2, horizon);
+				}
+				
+				AI.prs.add((1-pr1)*(1-pr2));
+				if((1-pr1)*(1-pr2)<PRUNE){
+					r3=0;
+				}else{
+					c3 = newState.getCardDist().smallestSuit(hokm);
+					r3 = case3(c3, newState, players, cv, op2, horizon);
+				}
 
-				actionReward = pr1 * r1 + (1 - pr1)
-						* ((pr2 * r2) + (1 - pr2) * r3);
+				actionReward = pr1 * r1 + (1 - pr1)	* ((pr2 * r2) + (1 - pr2) * r3);
 			}
 		} else {
 			if (firstSuit == hokm) {
 				AI.track.add(12);
 				pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
-				c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
-				r1 = case3(c1, newState, players, cv, op2, horizon);
+				AI.prs.add(pr1);
+				if(pr1<PRUNE){
+					r1=0;
+				}else{
+					c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
+					r1 = case3(c1, newState, players, cv, op2, horizon);
+				}
+				
 				pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
-				c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-				r2 = case3(c2, newState, players, cv, op2, horizon);
-				c3 = newState.getCardDist().smallestSuits(
-						AI.getOtherSuits(new SuitName[] { hokm }), op2);
-				r3 = case3(c3, newState, players, cv, op2, horizon);
+				AI.prs.add((1-pr1)*pr2);
+				if((1-pr1)*pr2<PRUNE){
+					r2=0;
+				}else{
+					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
+					r2 = case3(c2, newState, players, cv, op2, horizon);
+				}
+				
+				AI.prs.add((1-pr1)*(1-pr2));
+				if((1-pr1)*(1-pr2)<PRUNE){
+					r3=0;
+				}else{
+					c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm }), op2);
+					r3 = case3(c3, newState, players, cv, op2, horizon);
+				}
 
-				actionReward = pr1 * r1 + (1 - pr1)
-						* ((pr2 * r2) + (1 - pr2) * r3);
+				actionReward = pr1 * r1 + (1 - pr1)	* ((pr2 * r2) + (1 - pr2) * r3);
 			} else {
 				if (bestCardOnTable.getSuitName() == firstSuit) {
 					AI.track.add(13);
-					pr1 = newState.getCardDist()
-							.prGreater(bestCardOnTable, op2);
-					c1 = newState.getCardDist()
-							.smallestGreater(bestCardOnTable);
-					r1 = case3(c1, newState, players, cv, op2, horizon);
+					pr1 = newState.getCardDist().prGreater(bestCardOnTable, op2);
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestGreater(bestCardOnTable);
+						r1 = case3(c1, newState, players, cv, op2, horizon);
+					}
+					
 					pr2 = newState.getCardDist().prLess(bestCardOnTable, op2);
-					c2 = newState.getCardDist().smallestLess(bestCardOnTable);
-					r2 = case3(c2, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr1)*pr2);
+					if((1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestLess(bestCardOnTable);
+						r2 = case3(c2, newState, players, cv, op2, horizon);
+					}
+					
 					pr3 = newState.getCardDist().prSuit(hokm, op2);
-					c3 = newState.getCardDist().smallestSuit(hokm);
-					r3 = case3(c3, newState, players, cv, op2, horizon);
-					c4 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r4 = case3(c4, newState, players, cv, op2, horizon);
+					AI.prs.add((1-pr1)*(1-pr2)*pr3);
+					if((1-pr1)*(1-pr2)*pr3<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuit(hokm);
+						r3 = case3(c3, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1)*(1-pr2)*(1-pr3));
+					if((1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+						r4=0;
+					}else{
+						c4 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+						r4 = case3(c4, newState, players, cv, op2, horizon);
+					}
 
-					actionReward = pr1
-							* r1
-							+ (1 - pr1)
-							* (pr2 * r2 + (1 - pr2)
-									* (pr3 * r3 + (1 - pr3) * r4));
+					actionReward = pr1* r1+ (1 - pr1)* (pr2 * r2 + (1 - pr2)* (pr3 * r3 + (1 - pr3) * r4));
 				} else {
 					AI.track.add(14);
 					pr1 = newState.getCardDist().prSuit(firstSuit, op2);
-					c1 = newState.getCardDist().smallestSuit(firstSuit);
-					r1 = case3(c1, newState, players, cv, op2, horizon);
-					pr2 = newState.getCardDist()
-							.prGreater(bestCardOnTable, op2);
-					c2 = newState.getCardDist()
-							.smallestGreater(bestCardOnTable);
-					r2 = case3(c2, newState, players, cv, op2, horizon);
-					pr3 = newState.getCardDist()
-							.prSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					c3 = newState.getCardDist()
-							.smallestSuits(
-									AI.getOtherSuits(new SuitName[] { hokm,
-											firstSuit }), op2);
-					r3 = case3(c3, newState, players, cv, op2, horizon);
-					c4 = newState.getCardDist().smallestSuit(hokm);
-					r4 = case3(c4, newState, players, cv, op2, horizon);
-
-					actionReward = pr1
-							* r1
-							+ (1 - pr1)
-							* (pr2 * r2 + (1 - pr2)
-									* (pr3 * r3 + (1 - pr3) * r4));
+					AI.prs.add(pr1);
+					if(pr1<PRUNE){
+						r1=0;
+					}else{
+						c1 = newState.getCardDist().smallestSuit(firstSuit);
+						r1 = case3(c1, newState, players, cv, op2, horizon);
+					}
+					
+					pr2 = newState.getCardDist().prGreater(bestCardOnTable, op2);
+					AI.prs.add((1-pr1)*pr2);
+					if((1-pr1)*pr2<PRUNE){
+						r2=0;
+					}else{
+						c2 = newState.getCardDist().smallestGreater(bestCardOnTable);
+						r2 = case3(c2, newState, players, cv, op2, horizon);
+					}
+					
+					pr3 = newState.getCardDist().prSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+					AI.prs.add((1-pr1)*(1-pr2)*pr3);
+					if((1-pr1)*(1-pr2)*pr3<PRUNE){
+						r3=0;
+					}else{
+						c3 = newState.getCardDist().smallestSuits(AI.getOtherSuits(new SuitName[] { hokm,firstSuit }), op2);
+						r3 = case3(c3, newState, players, cv, op2, horizon);
+					}
+					
+					AI.prs.add((1-pr1)*(1-pr2)*(1-pr3));
+					if((1-pr1)*(1-pr2)*(1-pr3)<PRUNE){
+						r4=0;
+					}else{
+						c4 = newState.getCardDist().smallestSuit(hokm);
+						r4 = case3(c4, newState, players, cv, op2, horizon);
+					}
+					
+					actionReward = pr1* r1+ (1 - pr1)* (pr2 * r2 + (1 - pr2)* (pr3 * r3 + (1 - pr3) * r4));
 				}
 			}
 		}
@@ -393,14 +680,14 @@ public class LookTree {
 		cv.updateValue(newState.getOnTable());
 
 		Player winner = Game.detWinner(players, newState.getOnTable(), hokm);
-		/*boolean win=false;
-		boolean self=false;*/
+		boolean win=false;
+		/*boolean self=false;*/
 		if (winner == AI.staticPlayer.getTeam().getPlayer1()
 				|| winner == AI.staticPlayer.getTeam().getPlayer2()) {
 			newState.updateTeamScore();
-			/*win=true;
+			win=true;
 			
-			if(winner == AI.staticPlayer){
+			/*if(winner == AI.staticPlayer){
 				self = true;
 			}*/
 		} else {
@@ -415,20 +702,41 @@ public class LookTree {
 		players = GameBuilder.reorder(players, winner);
 		newState.getOnTable().clear();
 		
-		while (horizon > 1) {
-			double tmoReward = 0;
+		while (horizon > 0) {
+			//double tmoReward = 0;
+			List<Double> rewards = new ArrayList<Double>();
+			double tmpR = 0;
 			horizon--;
-			for (Card card : possibleMoves) {
-				tmoReward += AI.getActionReward(card, newState, players, cv,
-						players.get(0), horizon);
+			
+			if(possibleMoves.size()==0){
+				break;
+			}else{
+				tmpR = AI.getActionReward(possibleMoves.get(possibleMoves.size()-1), newState, players, cv,players.get(0), horizon);
+				rewards.add(tmpR);
+				for (int j=possibleMoves.size()-2; j>-1;j--) {
+					if(winner != AI.staticPlayer &&
+							possibleMoves.get(j).getSuit()==possibleMoves.get(j+1).getSuit()&&VALUES[cv.getValue(possibleMoves.get(j))]==VALUES[cv.getValue(possibleMoves.get(j+1))]){
+						continue;
+					}else{
+						tmpR = AI.getActionReward(possibleMoves.get(j), newState, players, cv,players.get(0), horizon);
+						rewards.add(tmpR);
+					}
+					
+				}
+				/*for(Card card:possibleMoves){
+					rewards.add(AI.getActionReward(card, newState, players, cv,players.get(0), horizon));
+				}*/
+			}	
+			
+			if(win){
+				return Collections.max(rewards);
+			}else{
+				return Collections.min(rewards);
 			}
-			if(possibleMoves.size()>0){
-				tmoReward=(tmoReward)/possibleMoves.size();
-			}
-			return tmoReward;
 		}
 		
 		actionReward += AI.getStateValue(newState, cv, /*win, self, */AI.myCard);
+		AI.rs.add(actionReward);
 		return actionReward;
 	}
 }

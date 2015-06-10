@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import controller.AgentPlayer;
 import controller.Player;
 
 public class Game {
@@ -60,7 +61,8 @@ public class Game {
 	}
 
 	public void shuffle(Deck deck) {
-		long seed = System.nanoTime();
+		Long seed = /*154539764302850L;41953904981932L;*/System.nanoTime();
+		System.out.println(seed);
 		Collections.shuffle(deck.getDeck(), new Random(seed));
 	}
 
@@ -79,6 +81,7 @@ public class Game {
 		for (Player player : this.players) {
 			player.getInHand().clear();
 			player.initSuitStatus();
+			player.newDist();
 			for (int i = 2; i <= 14; i++) {
 				card=this.deck.getDeck().get(j);
 				player.getInHand().add(card);

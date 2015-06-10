@@ -150,7 +150,7 @@ public class CardDist {
 		if(k==0){
 			return 1;
 		}
-		if(n<k){
+		if(n<k||n<=0){
 			return 0;
 		}
 		
@@ -234,4 +234,51 @@ public class CardDist {
 		}
 		return remainingCards;
 	}
+	
+	public double pHighestCard(SuitName suit, Player player){
+		double pr=0;
+		int sumCards=0;
+		for(int i=0; i<4;i++){
+			for(int j=0; j<13;j++){
+				sumCards+=this.cards[i][j];
+			}
+		}
+		
+		int s = suit.getSuit();
+		int p = player.getIndex();
+		int playerPlaces = this.places[s][p];
+		
+		pr = ((double)choose((sumCards-1),playerPlaces-1))/choose(sumCards,playerPlaces);
+		return pr;
+	}
+	
+	public Card highestCard(SuitName suit){
+		Card card;
+		int value=2;
+		int s = suit.getSuit();
+		for(int i=12;i>-1;i--){
+			if(this.cards[s][i]==1){
+				value = i+2;
+				break;
+			}
+		}
+		card = new Card(suit, ValueName.getValueName(value));
+		return card;
+	}
+	
+	public int remainingSuit(SuitName suit, List<Card> inHand){
+		int s = suit.getSuit();
+		int sum=0;
+		for(int i=0;i<13;i++){
+			sum+=this.cards[s][i];
+		}
+		for(Card c: inHand){
+			if(c.getSuitName()==suit){
+				sum+=1;
+			}
+		}
+		
+		return sum;
+	}
+	
 }

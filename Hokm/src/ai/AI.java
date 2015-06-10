@@ -1,6 +1,7 @@
 package ai;
 
 import gameplay.Card;
+import gameplay.CardDist;
 import gameplay.CardValue;
 import gameplay.Deck;
 import gameplay.State;
@@ -8,6 +9,9 @@ import gameplay.SuitName;
 import gameplay.Game;
 import gameplay.ValueName;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +37,9 @@ public class AI {
 			3.00, 3.00, 2.00, 2.00, 2.00, 2.00, 1.00, 1.00 };
 
 	public static List<Integer> track=new ArrayList<Integer>();
+	public static List<Double> prs=new ArrayList<Double>();
+	public static List<Double> rs=new ArrayList<Double>();
+	public static int turn = 0;
 	
 	private final static double[][][] coEf = getCoEf();
 
@@ -81,6 +88,11 @@ public class AI {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
 		int trickScoreValue=(trick1-trick2)*20;
+		if(trick1>6){
+			trickScoreValue+=200;
+		}else if(trick2>6){
+			trickScoreValue-=200;
+		}
 		/*if(win){
 			trickScoreValue = 20;
 			if(self && card.getSuitName()!=state.getHokm()){
@@ -99,9 +111,23 @@ public class AI {
 		
 		return trickScoreValue;
 	}
+	
+	private static int[] getCardValues(State state, SuitName suit){
+		SuitName hokm = state.getHokm();
+		CardDist cd = state.getCardDist();
+		if(suit==hokm){
+			return new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 6, 8, 10 };
+		}else if(cd.remainingSuit(suit, state.getInHand())>=10){
+			return new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 10 };
+		}else if(cd.remainingSuit(suit, state.getInHand())>=6){
+			return new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 6 };
+		}else{
+			return new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3 };
+		}
+		//return new int[]{1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 6, 8, 10 };
+	}
 
 	private static int getInHandValue(State state, CardValue cardValue) {
-		int[] cardValues = new int[] { 1, 1, 1, 1, 1, 2, 2, 2, 2, 4, 6, 8, 10 };
 		int inHandValue = 0;
 		boolean h = false;
 		boolean[] hasSuits = new boolean[] { false, false, false, false };
@@ -110,22 +136,23 @@ public class AI {
 				h = true;
 				hasSuits[card.getSuit()] = true;
 				if(cardValue.getValue(card)>9){
-					inHandValue += cardValues[cardValue.getValue(card)] * 4;
+					inHandValue += getCardValues(state, card.getSuitName())[cardValue.getValue(card)] * 4;
 				}else{
-					inHandValue += cardValues[cardValue.getValue(card)] * 3;
+					inHandValue += getCardValues(state, card.getSuitName())[cardValue.getValue(card)] * 3;
 				}
+				//inHandValue += getCardValues(state.getCardDist(),card.getSuitName(),state.getHokm())[cardValue.getValue(card)] * 3;
 			} else {
 				hasSuits[card.getSuit()] = true;
-				inHandValue += cardValues[cardValue.getValue(card)];
+				inHandValue += getCardValues(state ,card.getSuitName())[cardValue.getValue(card)];
 			}
 		}
-		if (h) {
+		/*if (h) {
 			for (boolean b : hasSuits) {
 				if (!b) {
-					inHandValue += 10;
+					inHandValue += 8;
 				}
 			}
-		}
+		}*/
 		return inHandValue;
 	}
 
@@ -155,10 +182,8 @@ public class AI {
 		newState.getPlayedBy().add(oPlayer);
 		newState.getCardDist().played(oCard, oPlayer);
 		if (!newState.getOnTable().isEmpty()) {
-			if (newState.getOnTable().get(0).getSuitName() != oCard
-					.getSuitName()) {
-				newState.getCardDist().passed(newState.getOnTable().get(0),
-						oPlayer);
+			if (newState.getOnTable().get(0).getSuitName() != oCard.getSuitName()) {
+				newState.getCardDist().passed(newState.getOnTable().get(0),	oPlayer);
 			}
 		}
 
@@ -170,12 +195,14 @@ public class AI {
 			List<Player> players, Player player, CardValue cardValue) {
 		staticPlayer = player;
 		Card bestAction = legalActions.get(0);
-		double maxReward = 0.0;
+		double maxReward = -10000;
 		double actionReward;
 		int horizon=2;
-		
+		turn ++;
+		List<Record> records=new ArrayList<Record>();
+		Record record;
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
-
+		
 		for (Card card : legalActions) {
 			myCard = card;
 			actionReward = getActionReward(card, state, players, cardValue,
@@ -187,8 +214,69 @@ public class AI {
 				maxReward = actionReward;
 				bestAction = card;
 			}
+			
+			record  = new Record();
+			record.cardName=card.toString();
+			record.track.addAll(track);
+			record.prs.addAll(prs);
+			record.rs.addAll(rs);
+			records.add(record);
+		}
+		/*try {
+			recordAction(bestAction, player, records);
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}*/
+		return bestAction;
+	}
+	
+	public static Card getAction(List<Card> legalActions, State state,
+			List<Player> players, Player player, CardValue cardValue, int horizon) {
+		Card bestAction = legalActions.get(0);
+		double maxReward = -10000;
+		double actionReward;
+		
+		for (Card card : legalActions) {
+			actionReward = getActionReward(card, state, players, cardValue,
+					player, horizon);
+
+			if (maxReward < actionReward) {
+				maxReward = actionReward;
+				bestAction = card;
+			}
 		}
 		return bestAction;
+	}
+	
+	public static List<Card> legalActions(State state) {
+		List<Card> actions = new ArrayList<Card>();
+
+		if (state.getOnTable().isEmpty()) {
+			actions = state.getInHand();
+		} else {
+			for (Card card : state.getInHand()) {
+				if (card.getSuitName() == state.getOnTable().get(0).getSuitName()) {
+					actions.add(card);
+				}
+			}
+			if (actions.size() == 0) {
+				actions = state.getInHand();
+			}
+		}
+
+		return actions;
+	}
+	
+	public static void recordAction(Card card, Player player, List<Record> records) throws FileNotFoundException, UnsupportedEncodingException{
+		PrintWriter writer = new PrintWriter("C:/hokm/1/"+turn+"-"+player.getName()+"-"+card.toString()+".txt", "UTF-8");
+		for (Record r:records){
+			writer.println(r.cardName);
+			writer.println(r.track.toString());
+			writer.println(r.prs.toString());
+			writer.println(r.rs.toString());
+		}
+		
+		writer.close();
 	}
 
 	public static double getActionReward(Card myCard, State oldState,
@@ -200,6 +288,8 @@ public class AI {
 		
 		double actionReward = 0.0;
 		track.clear();
+		prs.clear();
+		rs.clear();
 		switch (oldState.getOnTable().size()) {
 		case 0:
 			actionReward=LookTree.case0(myCard, newState, players, oldCardValue, staticPlayer, horizon);

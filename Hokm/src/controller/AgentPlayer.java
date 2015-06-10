@@ -27,12 +27,16 @@ public class AgentPlayer extends Player {
 			System.out.println(this.getInHand().indexOf(card)+1+") "+card.toString());
 		}*/
 		Card card;
-		
-		if(/*players.indexOf(this)==1*/true){
+		if(this.index==0||this.index==2){
 			card = AI.getAction(legalActions, state, players, this, cardValue);
 		}else{
 			card = AI.takeAction(legalActions, state, players, this, cardValue);
 		}
+		/*if(players.indexOf(this)==1true){
+			card = AI.getAction(legalActions, state, players, this, cardValue);
+		}else{
+			card = AI.takeAction(legalActions, state, players, this, cardValue);
+		}*/
 		System.out.println("\n"+this.getName()+" plays: " + card.toString());
 		System.out.println("Press \"Enter\" to continue...");
 		Scanner scanner = new Scanner(System.in); 
