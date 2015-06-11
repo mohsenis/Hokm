@@ -39,8 +39,8 @@ public class AgentPlayer extends Player {
 		}*/
 		System.out.println("\n"+this.getName()+" plays: " + card.toString());
 		System.out.println("Press \"Enter\" to continue...");
-		Scanner scanner = new Scanner(System.in); 
-		scanner.nextLine();
+		/*Scanner scanner = new Scanner(System.in); 
+		scanner.nextLine();*/
 		return card;
 	}
 
@@ -52,8 +52,8 @@ public class AgentPlayer extends Player {
 		SuitName hokm = AI.hokm(firstFive);
 		System.out.println("\nHokm: "+ hokm);
 		System.out.println("\nPress \"Enter\" to continue...");
-		Scanner scanner = new Scanner(System.in); 
-		scanner.nextLine();
+		/*Scanner scanner = new Scanner(System.in); 
+		scanner.nextLine();*/
 		return hokm;
 	}
 	

@@ -60,7 +60,12 @@ public class GameBuilder {
 	
 	public String startGame(List<Player> players){
 		teamBuilder(players);
-		players = reorder(players, players.get(1));
+		List<Player> ps = new ArrayList<Player>();
+		ps.add(players.get(0));
+		ps.add(players.get(1));
+		Collections.shuffle(ps);
+		
+		players = reorder(players, ps.get(0));
 		Game game = new Game(players);	
 		r = new int[2];
 		r[0]=0;
