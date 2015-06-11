@@ -694,16 +694,20 @@ public class LookTree {
 			newState.updateOpponentScore();
 		}
 		List<Card> possibleMoves;
-		if (winner == AI.staticPlayer)
+		if (winner == AI.staticPlayer){
 			possibleMoves = newState.getInHand();
-		else
+			if(AI.b1 && AI.myCard.getSuitName()!=newState.getHokm()){
+				AI.b2 = true;
+			}
+		}else{
 			possibleMoves = newState.getCardDist().possibleActions(winner);
+		}
 
 		players = GameBuilder.reorder(players, winner);
 		newState.getOnTable().clear();
 		
 		while (horizon > 0) {
-			//double tmoReward = 0;
+			AI.b1 = false;
 			List<Double> rewards = new ArrayList<Double>();
 			double tmpR = 0;
 			horizon--;
@@ -711,7 +715,7 @@ public class LookTree {
 			if(possibleMoves.size()==0){
 				break;
 			}else{
-				tmpR = AI.getActionReward(possibleMoves.get(possibleMoves.size()-1), newState, players, cv,players.get(0), horizon);
+				/*tmpR = AI.getActionReward(possibleMoves.get(possibleMoves.size()-1), newState, players, cv,players.get(0), horizon);
 				rewards.add(tmpR);
 				for (int j=possibleMoves.size()-2; j>-1;j--) {
 					if(winner != AI.staticPlayer &&
@@ -722,10 +726,10 @@ public class LookTree {
 						rewards.add(tmpR);
 					}
 					
-				}
-				/*for(Card card:possibleMoves){
-					rewards.add(AI.getActionReward(card, newState, players, cv,players.get(0), horizon));
 				}*/
+				for(Card card:possibleMoves){
+					rewards.add(AI.getActionReward(card, newState, players, cv,players.get(0), horizon));
+				}
 			}	
 			
 			if(win){

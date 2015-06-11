@@ -41,6 +41,10 @@ public class AI {
 	public static List<Double> rs=new ArrayList<Double>();
 	public static int turn = 0;
 	
+	public static boolean b1 = false;
+	public static boolean b2 = false;
+	public static int h = 0;
+	
 	private final static double[][][] coEf = getCoEf();
 
 	private static double[][][] getCoEf() {
@@ -87,7 +91,11 @@ public class AI {
 	private static int getTrickScoreValue(State state, /*boolean win, boolean self,*/ Card card) {
 		int trick1 = state.getTeamScore();
 		int trick2 = state.getOpponentScore();
-		int trickScoreValue=(trick1-trick2)*20;
+		/*int trickScoreValue=(trick1-trick2)*20;*/
+		int trickScoreValue=trick1*40;
+		if(AI.b2){
+			trickScoreValue += 10*h;
+		}
 		if(trick1>6){
 			trickScoreValue+=200;
 		}else if(trick2>6){
@@ -198,12 +206,16 @@ public class AI {
 		double maxReward = -10000;
 		double actionReward;
 		int horizon=2;
+		h = horizon;
 		turn ++;
 		List<Record> records=new ArrayList<Record>();
 		Record record;
 		System.out.println("\n" + player.getName() + "'s legal actions: ");
 		
 		for (Card card : legalActions) {
+			if(players.indexOf(player)==0)
+				b1 = true;
+			b2 = false;
 			myCard = card;
 			actionReward = getActionReward(card, state, players, cardValue,
 					player, horizon);

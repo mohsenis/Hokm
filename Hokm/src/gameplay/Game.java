@@ -61,7 +61,7 @@ public class Game {
 	}
 
 	public void shuffle(Deck deck) {
-		Long seed = /*154539764302850L;41953904981932L;*/System.nanoTime();
+		Long seed = /*154539764302850L;66246619841347L;*/System.nanoTime();
 		System.out.println(seed);
 		Collections.shuffle(deck.getDeck(), new Random(seed));
 	}
